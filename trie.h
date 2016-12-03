@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string>
 
+using namespace std;
+
 const int CHILDREN = 10;
 
 class Trie
