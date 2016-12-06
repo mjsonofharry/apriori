@@ -3,17 +3,17 @@
 
 #include <iostream>
 #include <string>
+#include <stringstream>
+#include <linkedList.h>
 
 using namespace std;
-
-const int CHILDREN = 10;
 
 class Trie
 {
     private:
         struct Node
         {
-            Node *mChild[CHILDREN];
+            LinkedList <Node *> mList;
             int mSupport;
 
             /* Purpose:  Default constructor for Node
@@ -22,12 +22,7 @@ class Trie
              ******************************************************************/
             Node()
             {
-                for (int i = 0; i < CHILDREN; i++)
-                {
-                    mChild[i] = NULL;
-                } // end for
 
-                mSupport = 1;
             } // end function
 
             /* Purpose:  Destructor for Node
@@ -36,10 +31,7 @@ class Trie
              ******************************************************************/
             ~Node()
             {
-                for (int i = 0; i < CHILDREN; i++)
-                {
-                    mChild[i] = NULL;
-                } // end for
+                mList.clear();
             } //end function
         } // end struct
 
@@ -69,12 +61,23 @@ class Trie
             return mCount;
         } // end function
 
-        int insert(Node *newNode);
-        int insert(string data);
-        int prune();
-        int read(istream in);
-        int removeSubtree(Node *rootNode);
-        int write(ostream out);
+        void insert(Node *newNode);
+        void insert(string data);
+        void prune();
+
+        void read(istream in)
+        {
+            string data;
+
+            while (in)
+            {
+                getline(in, data);
+                insert(data);
+            }
+        }
+
+        void removeSubtree(Node *rootNode);
+        void write(ostream out);
     // end public
 } // end class
 

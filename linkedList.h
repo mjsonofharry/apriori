@@ -14,6 +14,7 @@
 #define LINKED_LIST
 
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -24,6 +25,7 @@ class LinkedList
    struct Node
    {
       R       mData;
+      string  mLabel;
       Node<R> *mNext;
 
       /*      Pre:  None
@@ -32,8 +34,9 @@ class LinkedList
        *************************************************************************/
       Node()
       {
-         mData = R();
-         mNext = NULL;
+         mData  = R();
+         mLabel = "";
+         mNext  = NULL;
       }
 
 
@@ -41,10 +44,11 @@ class LinkedList
        *     Post:  This object is initialized using specified data
        *  Purpose:  To intialize date object
        *************************************************************************/
-      Node(R data)
+      Node(R data, string label)
       {
-         mData = data;
-         mNext = NULL;
+         mData  = data;
+         mLabel = label;
+         mNext  = NULL;
       }
    };
 
@@ -57,9 +61,11 @@ class LinkedList
       LinkedList();
       ~LinkedList();
 
-      int  getCount();
-      T    getData(int index);
-      void setData(int index, T data);
+      int    getCount();
+      T      getData(int index);
+      string getLabel();
+      void   setData(int index, T data);
+      void   setLabel(string label);
 
       void clear();
       void display();
