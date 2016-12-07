@@ -84,8 +84,6 @@ class Trie
             {
                 Data item;
 
-                item.mLabel = data;
-
                 mList.insert(item);
             }
 
@@ -142,8 +140,33 @@ class Trie
 
         void insert(Node *newNode);
 
-        void insert(string data)
+        void insert(stringstream &transaction)
         {
+            Node * node, * tmp;
+            Data data;
+            string label;
+
+            node = mRootNode;
+
+            while (ss)
+            {
+                transaction >> label;
+
+                data = Data(NULL, label);
+
+                /* item does not exist in current node's list, so add it */
+                if (!node->mList.isExist(label))
+                {
+                    tmp = new Node();
+                    data.mNode = tmp;
+
+                    node->mList.insert(data);
+                }
+
+                /* traverse to next node in trie */
+                node = node->mList.getData(label)->mNode;
+                node->mSupport++;
+            }
         }
 
         void prune();
@@ -154,22 +177,17 @@ class Trie
          ******************************************************************/
         void read(istream in)
         {
-            stringstream ss;
-            string data;
+            stringstream transaction;
+            string tmp;
 
             /* read each transaction */
             while (in)
             {
                 /* get a single transaction */
-                getline(in, data);
-                ss.str() = data;
+                getline(in, tmp);
+                transaction.str() = tmp;
 
-                /* insert each item of the current transaction */
-                while (ss)
-                {
-                    ss >> data;
-                    insert(data);
-                }
+                insert(transaction);
             }
         }
 
