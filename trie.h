@@ -8,24 +8,88 @@
 
 using namespace std;
 
+struct Data
+{
+    Node   *mNode;
+    string mLabel;
+
+    Data()
+    {
+        mNode  = NULL;
+        mLabel = "";
+    }
+
+    Data(Node *node, string data)
+    {
+        mNode  = node;
+        mLabel = data;
+    }
+
+    ~Data()
+    {
+        mNode  = NULL;
+        mLabel = "";
+    }
+
+    Data& operator=(const Data &rhs)
+    {
+        mNode  = rhs.mNode;
+        mLabel = rhs.mLabel;
+    }
+
+    bool operator==(const Data &rhs)
+    {
+        return mLabel == rhs.mLabel;
+    }
+
+    bool operator<(const Data &rhs)
+    {
+        return mLabel < rhs.mLabel;
+    }
+
+    bool operator<=(const Data &rhs)
+    {
+        return mLabel <= rhs.mLabel;
+    }
+
+    bool operator>(const Data &rhs)
+    {
+        return mLabel > rhs.mLabel;
+    }
+
+    bool operator>=(const Data &rhs)
+    {
+        return mLabel >= rhs.mLabel;
+    }
+}
+
 class Trie
 {
     private:
         struct Node
         {
-            LinkedList <Node *> mList;
+            LinkedList <Data*> mList;
             int mSupport;
 
-            /* Purpose:  Default constructor for Node
+            /* Purpose:  Default constructor for node
              *     Pre:  None
              *    Post:  Node is initialized with default values
              ******************************************************************/
             Node()
             {
-
+                mSupport = 0;
             } // end function
 
-            /* Purpose:  Destructor for Node
+            Node(string data)
+            {
+                Data item;
+
+                item.mLabel = data;
+
+                mList.insert(item);
+            }
+
+            /* Purpose:  Destructor for node
              *     Pre:  None
              *    Post:  Node pointers are grounded
              ******************************************************************/
@@ -36,23 +100,38 @@ class Trie
         } // end struct
 
         Node *mRootNode;
-        int mCount;
+        int  mCount;
     // end private
 
     public:
-        Trie();
-        ~Trie();
-
-        /* Purpose:  Get the root Node of the Trie
+        /* Purpose:  Constructor for trie
          *     Pre:  None
-         *    Post:  Returns root Node
+         *    Post:  Creates root node
+         ******************************************************************/
+        Trie()
+        {
+            mRootNode = new Node();
+        }
+
+        /* Purpose:  Destructor for trie
+         *     Pre:  None
+         *    Post:  Destroys subtree from root node
+         ******************************************************************/
+        ~Trie()
+        {
+            removeSubtree(mRootNode);
+        }
+
+        /* Purpose:  Get the root node of the trie
+         *     Pre:  None
+         *    Post:  Returns root node
          ******************************************************************/
         Node *getRootNode()
         {
             return mRootNode;
         } // end function
 
-        /* Purpose:  Get the number of nodes in the Trie
+        /* Purpose:  Get the number of nodes in the trie
          *     Pre:  None
          *    Post:  Returns number of nodes
          ******************************************************************/
@@ -62,17 +141,35 @@ class Trie
         } // end function
 
         void insert(Node *newNode);
-        void insert(string data);
+
+        void insert(string data)
+        {
+        }
+
         void prune();
 
+        /* Purpose:  Read a dataset
+         *     Pre:  Input stream
+         *    Post:  Inserts each transaction into the trie
+         ******************************************************************/
         void read(istream in)
         {
+            stringstream ss;
             string data;
 
+            /* read each transaction */
             while (in)
             {
+                /* get a single transaction */
                 getline(in, data);
-                insert(data);
+                ss.str() = data;
+
+                /* insert each item of the current transaction */
+                while (ss)
+                {
+                    ss >> data;
+                    insert(data);
+                }
             }
         }
 

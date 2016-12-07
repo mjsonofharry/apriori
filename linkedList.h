@@ -14,7 +14,6 @@
 #define LINKED_LIST
 
 #include <iostream>
-#include <string>
 
 using namespace std;
 
@@ -25,7 +24,6 @@ class LinkedList
    struct Node
    {
       R       mData;
-      string  mLabel;
       Node<R> *mNext;
 
       /*      Pre:  None
@@ -34,9 +32,8 @@ class LinkedList
        *************************************************************************/
       Node()
       {
-         mData  = R();
-         mLabel = "";
-         mNext  = NULL;
+         mData = R();
+         mNext = NULL;
       }
 
 
@@ -44,11 +41,10 @@ class LinkedList
        *     Post:  This object is initialized using specified data
        *  Purpose:  To intialize date object
        *************************************************************************/
-      Node(R data, string label)
+      Node(R data)
       {
-         mData  = data;
-         mLabel = label;
-         mNext  = NULL;
+         mData = data;
+         mNext = NULL;
       }
    };
 
@@ -61,11 +57,10 @@ class LinkedList
       LinkedList();
       ~LinkedList();
 
-      int    getCount();
-      T      getData(int index);
-      string getLabel();
-      void   setData(int index, T data);
-      void   setLabel(string label);
+      int  getCount();
+      T    getData(int index);
+      T    getData(T data);
+      void setData(int index, T data);
 
       void clear();
       void display();
@@ -140,6 +135,34 @@ T LinkedList<T>::getData(int index)
       tmp = tmp->mNext;
 
    return tmp->mData;
+}
+
+
+template <typename T>
+T LinkedList<T>::getData(T data)
+{
+    bool    found = false;
+    Node<T> *tmp;
+
+    tmp = mHead;
+    while (tmp != NULL && !found)
+    {
+       if (tmp->mData == searchKey)
+          found = true;
+       else if (tmp->mData > searchKey)
+          tmp = NULL;
+       else
+          tmp = tmp->mNext;
+    }
+
+    if (found)
+    {
+        return tmp;
+    }
+    else
+    {
+        return T();
+    }
 }
 
 
