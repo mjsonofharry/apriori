@@ -158,6 +158,17 @@ class Trie
                 if (!node->mList.isExist(label))
                 {
                     tmp = new Node();
+
+                    /* ran out of heap space */
+                    if (tmp == NULL)
+                    {
+                        fprintf(stderr,
+                            "trie: failed to create '%s' in transaction '%s'",
+                            label, transaction.str());
+                        perror(NULL):
+                        return;
+                    }
+
                     data.mNode = tmp;
 
                     node->mList.insert(data);
