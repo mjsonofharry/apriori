@@ -52,6 +52,8 @@ class LinkedList
    private:
       Node<T> *mHead, *mTail;
       int     mCount;
+      string  mLabel;
+      
 
    public:
       LinkedList();
@@ -60,7 +62,9 @@ class LinkedList
       int  getCount();
       T    getData(int index);
       T    getData(T data);
+      T    getLabel(T label);
       void setData(int index, T data);
+      void setLabel(string label);
 
       void clear();
       void display();
@@ -165,6 +169,12 @@ T LinkedList<T>::getData(T data)
     }
 }
 
+template <typename T>
+T LinkedList<T>::getLabel(T label)
+{
+    return mLabel;
+}
+
 
 /*      Pre:  The list is instantiated, the index is valid and the data is
  *            available
@@ -186,6 +196,12 @@ void LinkedList<T>::setData(int index, T data)
       tmp = tmp->mNext;
 
    tmp->mData = data;
+}
+
+template <typename T>
+void LinkedList<T>::setLabel(string label)
+{
+    mLabel = label;
 }
 
 
