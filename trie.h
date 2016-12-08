@@ -8,67 +8,13 @@
 
 using namespace std;
 
-struct Data
-{
-    Node   *mNode;
-    string mLabel;
-
-    Data()
-    {
-        mNode  = NULL;
-        mLabel = "";
-    }
-
-    Data(Node *node, string data)
-    {
-        mNode  = node;
-        mLabel = data;
-    }
-
-    ~Data()
-    {
-        mNode  = NULL;
-        mLabel = "";
-    }
-
-    Data& operator=(const Data &rhs)
-    {
-        mNode  = rhs.mNode;
-        mLabel = rhs.mLabel;
-    }
-
-    bool operator==(const Data &rhs)
-    {
-        return mLabel == rhs.mLabel;
-    }
-
-    bool operator<(const Data &rhs)
-    {
-        return mLabel < rhs.mLabel;
-    }
-
-    bool operator<=(const Data &rhs)
-    {
-        return mLabel <= rhs.mLabel;
-    }
-
-    bool operator>(const Data &rhs)
-    {
-        return mLabel > rhs.mLabel;
-    }
-
-    bool operator>=(const Data &rhs)
-    {
-        return mLabel >= rhs.mLabel;
-    }
-}
-
 class Trie
 {
     private:
         struct Node
         {
-            LinkedList <Data*> mList;
+            LinkedList <Node *> mList;
+            string mLabel;
             int mSupport;
 
             /* Purpose:  Default constructor for node
@@ -77,14 +23,18 @@ class Trie
              ******************************************************************/
             Node()
             {
+                mLabel   = "";
                 mSupport = 0;
             } // end function
 
-            Node(string data)
+            /* Purpose:  Constructor for node
+             *     Pre:  Label
+             *    Post:  Node is initialized
+             ******************************************************************/
+            Node(string label)
             {
-                Data item;
-
-                mList.insert(item);
+                mLabel   = label;
+                mSupport = 1;
             }
 
             /* Purpose:  Destructor for node
@@ -93,118 +43,113 @@ class Trie
              ******************************************************************/
             ~Node()
             {
+                mLabel   = "";
+                mSupport = 0;
                 mList.clear();
             } //end function
         } // end struct
 
-        Node *mRootNode;
-        int  mCount;
+        Node * mRootNode;
+        int mCount;
     // end private
 
     public:
-        /* Purpose:  Constructor for trie
-         *     Pre:  None
-         *    Post:  Creates root node
-         ******************************************************************/
-        Trie()
-        {
-            mRootNode = new Node();
-        }
-
-        /* Purpose:  Destructor for trie
-         *     Pre:  None
-         *    Post:  Destroys subtree from root node
-         ******************************************************************/
-        ~Trie()
-        {
-            removeSubtree(mRootNode);
-        }
-
-        /* Purpose:  Get the root node of the trie
-         *     Pre:  None
-         *    Post:  Returns root node
-         ******************************************************************/
-        Node *getRootNode()
-        {
-            return mRootNode;
-        } // end function
-
-        /* Purpose:  Get the number of nodes in the trie
-         *     Pre:  None
-         *    Post:  Returns number of nodes
-         ******************************************************************/
-        int getCount()
-        {
-            return mCount;
-        } // end function
-
-        void insert(Node *newNode);
-
-        void insert(stringstream &transaction)
-        {
-            Node * node, * tmp;
-            Data data;
-            string label;
-
-            node = mRootNode;
-
-            while (ss)
-            {
-                transaction >> label;
-
-                data = Data(NULL, label);
-
-                /* item does not exist in current node's list, so add it */
-                if (!node->mList.isExist(label))
-                {
-                    tmp = new Node();
-
-                    /* ran out of heap space */
-                    if (tmp == NULL)
-                    {
-                        fprintf(stderr,
-                            "trie: failed to create '%s' in transaction '%s'",
-                            label, transaction.str());
-                        perror(NULL):
-                        return;
-                    }
-
-                    data.mNode = tmp;
-
-                    node->mList.insert(data);
-                }
-
-                /* traverse to next node in trie */
-                node = node->mList.getData(label)->mNode;
-                node->mSupport++;
-            }
-        }
-
+        Trie();
+        ~Trie();
+        Node * getRootNode();
+        int getCount();
+        void insert(stringstream & dataset);
         void prune();
-
-        /* Purpose:  Read a dataset
-         *     Pre:  Input stream
-         *    Post:  Inserts each transaction into the trie
-         ******************************************************************/
-        void read(istream in)
-        {
-            stringstream transaction;
-            string tmp;
-
-            /* read each transaction */
-            while (in)
-            {
-                /* get a single transaction */
-                getline(in, tmp);
-                transaction.str() = tmp;
-
-                insert(transaction);
-            }
-        }
-
-        void removeSubtree(Node *rootNode);
-        void write(ostream out);
+        void read(istream & in);
+        void removeSubtree(Node * rootNode);
+        void write(ostream & out);
     // end public
 } // end class
+
+/* Purpose:  Constructor for trie
+ *     Pre:  None
+ *    Post:  Creates root node
+ ******************************************************************/
+Trie::Trie()
+{
+    mRootNode = new Node();
+}
+
+/* Purpose:  Destructor for trie
+ *     Pre:  None
+ *    Post:  Destroys subtree from root node
+ ******************************************************************/
+Trie::~Trie()
+{
+    removeSubtree(mRootNode);
+}
+
+/* Purpose:  Get the root node of the trie
+ *     Pre:  None
+ *    Post:  Returns root node
+ ******************************************************************/
+Node * Trie::getRootNode()
+{
+    return mRootNode;
+} // end function
+
+/* Purpose:  Get the number of nodes in the trie
+ *     Pre:  None
+ *    Post:  Returns number of nodes
+ ******************************************************************/
+int Trie::getCount()
+{
+    return mCount;
+} // end function
+
+void Trie::insert(stringstream & dataset)
+{
+    Node * node, * tmp;
+    string item;
+
+    node = mRootNode;
+
+    while (dataset)
+    {
+        dataset >> item;
+
+        /* CASE 1: item exists in node list */
+        if ()
+        {
+
+        }
+        /* CASE 2: item does not exist in node list */
+        else
+        {
+
+        }
+    }
+}
+
+void Trie::prune();
+
+/* Purpose:  Read a dataset
+ *     Pre:  Input stream
+ *    Post:  Inserts each transaction into the trie
+ ******************************************************************/
+void Trie::read(istream in)
+{
+    stringstream dataset;
+    string str;
+
+    /* read each transaction */
+    while (in)
+    {
+        /* get a single transaction (i.e. a single line ) */
+        getline(in, str);
+        dataset.str() = str;
+
+        insert(dataset);
+        dataset.str() = "";
+    }
+}
+
+void Trie::removeSubtree(Node *rootNode);
+void Trie::write(ostream out);
 
 #endif
