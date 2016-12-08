@@ -53,18 +53,18 @@ class LinkedList
       Node<T> *mHead, *mTail;
       int     mCount;
       string  mLabel;
-      
+
 
    public:
       LinkedList();
       ~LinkedList();
 
-      int  getCount();
-      T    getData(int index);
-      T    getData(T data);
-      T    getLabel(T label);
-      void setData(int index, T data);
-      void setLabel(string label);
+      int    getCount();
+      T      getData(int index);
+      T      getData(T data);
+      string getLabel();
+      void   setData(int index, T data);
+      void   setLabel(string label);
 
       void clear();
       void display();
@@ -169,8 +169,9 @@ T LinkedList<T>::getData(T data)
     }
 }
 
+
 template <typename T>
-T LinkedList<T>::getLabel(T label)
+string LinkedList<T>::getLabel()
 {
     return mLabel;
 }
@@ -197,6 +198,7 @@ void LinkedList<T>::setData(int index, T data)
 
    tmp->mData = data;
 }
+
 
 template <typename T>
 void LinkedList<T>::setLabel(string label)
