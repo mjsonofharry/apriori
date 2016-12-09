@@ -27,6 +27,12 @@ class Trie
                 mSupport = 0;
             } // end function
 
+            Node(string label)
+            {
+                mLabel   = label;
+                mSupport = 0;
+            }
+
             /* Purpose:  Destructor for node
              *     Pre:  None
              *    Post:  Node pointers are grounded
@@ -174,28 +180,25 @@ int Trie::getCount()
 
 void Trie::insert(stringstream &itemset)
 {
-    Node * node;
-    Data * tmp;
+    Node *tmp, *newNode;
     string item;
     int index;
 
-    currentNode = mRootNode;
+    tmp = mRootNode;
 
     while (itemset)
     {
         itemset >> item;
-        tmp = tmp(NULL, item);
 
-        /* CASE 1: item exists in child list */
-        if ((index = isExist(tmp)) != -1)
+        newNode = new Node(item);
+
+        if (!tmp->mList.insert(newNode))
         {
-
+            delete newNode;
         }
-        /* CASE 2: item does not exist in child list */
-        else
-        {
 
-        }
+        tmp = tmp->mList.search(Node(item));
+        tmp->mSupport++;
     }
 }
 
