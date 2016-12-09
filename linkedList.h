@@ -52,27 +52,23 @@ class LinkedList
    private:
       Node<T> *mHead, *mTail;
       int     mCount;
-      string  mLabel;
-
 
    public:
       LinkedList();
       ~LinkedList();
 
-      int    getCount();
-      T      getData(int index);
-      T      getData(T data);
-      string getLabel();
-      void   setData(int index, T data);
-      void   setLabel(string label);
+      int  getCount();
+      T    getData(int index);
+      void setData(int index, T data);
 
       void clear();
       void display();
       bool insert(T data);
       bool isEmpty();
-      bool isExist(T searchKey);
+      int  isExist(T searchKey);
       bool remove(T searchKey);
       T    removeAt(int index);
+      T    search(T searchKey);
 
       T operator[](int index);
 };
@@ -142,41 +138,6 @@ T LinkedList<T>::getData(int index)
 }
 
 
-template <typename T>
-T LinkedList<T>::getData(T data)
-{
-    bool    found = false;
-    Node<T> *tmp;
-
-    tmp = mHead;
-    while (tmp != NULL && !found)
-    {
-       if (tmp->mData == searchKey)
-          found = true;
-       else if (tmp->mData > searchKey)
-          tmp = NULL;
-       else
-          tmp = tmp->mNext;
-    }
-
-    if (found)
-    {
-        return tmp;
-    }
-    else
-    {
-        return T();
-    }
-}
-
-
-template <typename T>
-string LinkedList<T>::getLabel()
-{
-    return mLabel;
-}
-
-
 /*      Pre:  The list is instantiated, the index is valid and the data is
  *            available
  *     Post:  The data in the specified index is updated with the specified
@@ -197,13 +158,6 @@ void LinkedList<T>::setData(int index, T data)
       tmp = tmp->mNext;
 
    tmp->mData = data;
-}
-
-
-template <typename T>
-void LinkedList<T>::setLabel(string label)
-{
-    mLabel = label;
 }
 
 
@@ -339,23 +293,25 @@ bool LinkedList<T>::isEmpty()
  *  Purpose:  To determine if a specific value exists in the list or not
  *****************************************************************************/
 template <typename T>
-bool LinkedList<T>::isExist(T searchKey)
+int LinkedList<T>::isExist(T searchKey)
 {
-   bool    found = false;
+   int     i, index;
    Node<T> *tmp;
 
+   index = -1;
+
    tmp = mHead;
-   while (tmp != NULL && !found)
+   for (i = 0; tmp != NULL && !found; i++)
    {
       if (tmp->mData == searchKey)
-         found = true;
+         index = i;
       else if (tmp->mData > searchKey)
          tmp = NULL;
       else
          tmp = tmp->mNext;
    }
 
-   return found;
+   return index;
 }
 
 
@@ -475,6 +431,35 @@ template <typename T>
  T LinkedList<T>::operator[](int index)
 {
    return getData(index);
+}
+
+
+/*      Pre:  None
+ *     Post:  Returns the data found
+ *  Purpose:  To search for a particular data value and return it,
+              especially when the data type is an object
+ *   Author:  Matthew James Harrison
+ *************************************************************************/
+template <typename T>
+int LinkedList<T>::search(T searchKey)
+{
+   Node<T> *tmp;
+   T       data;
+
+   out = T();
+
+   tmp = mHead;
+   while (tmp != NULL && !found)
+   {
+      if (tmp->mData == searchKey)
+         data = tmp->mData;
+      else if (tmp->mData > searchKey)
+         tmp = NULL;
+      else
+         tmp = tmp->mNext;
+   }
+
+   return data;
 }
 
 #endif

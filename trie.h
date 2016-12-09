@@ -13,9 +13,9 @@ class Trie
     private:
         struct Node
         {
-            LinkedList <Node *> mList;
-            string mLabel;
-            int mSupport;
+            LinkedList<Data> mList;
+            string           mLabel;
+            int              mSupport;
 
             /* Purpose:  Default constructor for node
              *     Pre:  None
@@ -27,42 +27,112 @@ class Trie
                 mSupport = 0;
             } // end function
 
-            /* Purpose:  Constructor for node
-             *     Pre:  Label
-             *    Post:  Node is initialized
-             ******************************************************************/
-            Node(string label)
-            {
-                mLabel   = label;
-                mSupport = 1;
-            }
-
             /* Purpose:  Destructor for node
              *     Pre:  None
              *    Post:  Node pointers are grounded
              ******************************************************************/
             ~Node()
             {
-                mLabel   = "";
-                mSupport = 0;
                 mList.clear();
             } //end function
+
+            bool operator==(const Node &rhs)
+            {
+                return mLabel == rhs.mLabel;
+            }
+
+            bool operator<(const Node &rhs)
+            {
+                return mLabel < rhs.mLabel;
+            }
+
+            bool operator<=(const Node &rhs)
+            {
+                return mLabel <= rhs.mLabel;
+            }
+
+            bool operator>(const Node &rhs)
+            {
+                return mLabel > rhs.mLabel;
+            }
+
+            bool operator>=(const Node &rhs)
+            {
+                return mLabel >= rhs.mLabel;
+            }
         } // end struct
 
-        Node * mRootNode;
-        int mCount;
+        struct Data
+        {
+            Node   *mNode;
+            string mItem;
+
+            Data()
+            {
+                mNode = NULL;
+                mItem = "";
+            }
+
+            Data(Node *node, string item)
+            {
+                mNode = node;
+                mItem = item;
+            }
+
+            ~Data()
+            {
+                mNode = NULL;
+                mItem = "";
+            }
+
+            Data& operator=(const Data &rhs)
+            {
+                mNode = rhs.mNode;
+                mItem = rhs.mItem;
+            }
+
+            bool operator==(const Data &rhs)
+            {
+                return mItem == rhs.mItem;
+            }
+
+            bool operator<(const Data &rhs)
+            {
+                return mItem < rhs.mItem;
+            }
+
+            bool operator<=(const Data &rhs)
+            {
+                return mItem <= rhs.mItem;
+            }
+
+            bool operator>(const Data &rhs)
+            {
+                return mItem > rhs.mItem;
+            }
+
+            bool operator>=(const Data &rhs)
+            {
+                return mItem >= rhs.mItem;
+            }
+        } // end struct
+
+        Node *mRootNode;
+        int  mCount;
     // end private
 
     public:
         Trie();
         ~Trie();
-        Node * getRootNode();
-        int getCount();
-        void insert(stringstream & dataset);
+
+        Node* getRootNode();
+        int   getCount();
+
+        void insert(stringstream &itemset);
         void prune();
-        void read(istream & in);
-        void removeSubtree(Node * rootNode);
-        void write(ostream & out);
+        void read(istream &dataset);
+        void removeSubtree(Node *rootNode);
+        void write(ostream &target);
     // end public
 } // end class
 
@@ -88,7 +158,7 @@ Trie::~Trie()
  *     Pre:  None
  *    Post:  Returns root node
  ******************************************************************/
-Node * Trie::getRootNode()
+Node* Trie::getRootNode()
 {
     return mRootNode;
 } // end function
@@ -102,23 +172,26 @@ int Trie::getCount()
     return mCount;
 } // end function
 
-void Trie::insert(stringstream & dataset)
+void Trie::insert(stringstream &itemset)
 {
-    Node * node, * tmp;
+    Node * node;
+    Data * tmp;
     string item;
+    int index;
 
-    node = mRootNode;
+    currentNode = mRootNode;
 
-    while (dataset)
+    while (itemset)
     {
-        dataset >> item;
+        itemset >> item;
+        tmp = tmp(NULL, item);
 
-        /* CASE 1: item exists in node list */
-        if ()
+        /* CASE 1: item exists in child list */
+        if ((index = isExist(tmp)) != -1)
         {
 
         }
-        /* CASE 2: item does not exist in node list */
+        /* CASE 2: item does not exist in child list */
         else
         {
 
@@ -130,26 +203,25 @@ void Trie::prune();
 
 /* Purpose:  Read a dataset
  *     Pre:  Input stream
- *    Post:  Inserts each transaction into the trie
+ *    Post:  Inserts each itemset from the dataset into the trie
  ******************************************************************/
-void Trie::read(istream in)
+void Trie::read(istream &dataset)
 {
-    stringstream dataset;
+    stringstream itemset;
     string str;
 
-    /* read each transaction */
-    while (in)
+    /* read each itemset */
+    while (dataset)
     {
-        /* get a single transaction (i.e. a single line ) */
-        getline(in, str);
-        dataset.str() = str;
+        getline(dataset, str);
+        itemset.str() = str;
 
-        insert(dataset);
-        dataset.str() = "";
+        insert(itemset);
+        itemset.str() = "";
     }
 }
 
 void Trie::removeSubtree(Node *rootNode);
-void Trie::write(ostream out);
+void Trie::write(ostream target);
 
 #endif
