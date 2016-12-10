@@ -7,7 +7,7 @@ int main()
     ofstream fout;
 
     fin.open("T5.N0.01K.D0.02K.txt");
-    fout.open("T5.N0.01K.D0.02K-output.txt");
+    fout.open("output_test.txt");
 
     cout << "Reading...\n";
     trie.read(fin);

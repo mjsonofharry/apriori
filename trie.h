@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include "linkedList.h"
+#include "stack.h"
 
 using namespace std;
 
@@ -30,7 +31,7 @@ class Trie
             Node(string label)
             {
                 mLabel   = label;
-                mSupport = 0;
+                mSupport = 1;
             }
 
             /* Purpose:  Destructor for node
@@ -94,6 +95,12 @@ class Trie
 Trie::Trie()
 {
     mRootNode = new Node();
+
+    if (mRootNode == NULL)
+    {
+        perror(NULL);
+        exit(1);
+    }
 }
 
 /* Purpose:  Destructor for trie
@@ -124,26 +131,35 @@ void Trie::insert(stringstream &itemset)
 
     while (itemset)
     {
+        /* increase support of current node */
+        node->mSupport++;
+
+        /* retrieve a single item */
         itemset >> item;
 
+        cout << "\t\tInserting: " << item << "\n";
+
+        /* allocate space in the heap */
         newNode = new Node(item);
         if (newNode == NULL)
         {
+            perror(NULL);
             exit(1);
         }
 
-        if (node->mList.insert(newNode))
+        if (node->mList.isExist(newNode))
         {
+            cout << "\t\tLinked found. Traveling to next trie node.\n";
             node = node->mList.search(newNode);
-            node->mSupport++;
+
+            /* new node is not needed this time */
+            delete newNode;
+            newNode = NULL;
         }
         else
         {
-            node = node->mList.search(newNode);
-            node->mSupport++;
-
-            delete newNode;
-            newNode = NULL;
+            cout << "\t\tLink not found. Creating link to new trie node.\n";
+            node->mList.insert(newNode);
         }
     }
 }
@@ -185,12 +201,12 @@ void Trie::read(ifstream &dataset)
         {
             break;
         }
-        itemset.str() = str;
+        itemset.str(str);
         cout << "\tInserting: " << str << "\n";
 
 
         insert(itemset);
-        itemset.str() = "";
+        itemset.str(string());
     }
 }
 
@@ -213,30 +229,28 @@ void Trie::removeSubtree(Node *node)
 
 void Trie::write(ostream &target, const int &limit)
 {
-    write(target, limit, mRootNode, 0);
-}
+    Stack<Node*> stack;
+    Node *node;
+    int count, i;
 
-
-void Trie::write(ostream &target, const int &limit, Node *node, int depth)
-{
-    Node *tmp;
-    int count;
-
-    depth++;
-
-    if (depth > limit)
+    if (mRootNode != NULL)
     {
-        return;
-    }
+        stack.push(mRootNode);
 
-    count = node->mList.getCount();
-    for (int i = 0; i < count; i++)
-    {
-        target << node->mLabel << ", ";
-        tmp = node->mList.getData(i);
-        write(target, limit, tmp, depth);
+        while (!stack.isEmpty())
+        {
+            node = stack.pop();
+            target << node->mLabel << ", ";
+
+            count = node->mList.getCount();
+            for (i = 0; i < count; i++)
+            {
+                stack.push(node->mList.getData(i));
+            }
+        }
+
+        stack.clear();
     }
-    target << endl;
 }
 
 #endif
