@@ -3,8 +3,8 @@
 
 #include <iostream>
 #include <string>
-#include <stringstream>
-#include <linkedList.h>
+#include <sstream>
+#include "linkedList.h"
 
 using namespace std;
 
@@ -13,9 +13,9 @@ class Trie
     private:
         struct Node
         {
-            LinkedList<Data> mList;
-            string           mLabel;
-            int              mSupport;
+            LinkedList<Node*> mList;
+            string            mLabel;
+            int               mSupport;
 
             /* Purpose:  Default constructor for node
              *     Pre:  None
@@ -42,105 +42,50 @@ class Trie
                 mList.clear();
             } //end function
 
-            bool operator==(const Node &rhs)
+            bool operator==(Node &rhs)
             {
                 return mLabel == rhs.mLabel;
             }
 
-            bool operator<(const Node &rhs)
+            bool operator<(Node &rhs)
             {
                 return mLabel < rhs.mLabel;
             }
 
-            bool operator<=(const Node &rhs)
+            bool operator<=(Node &rhs)
             {
                 return mLabel <= rhs.mLabel;
             }
 
-            bool operator>(const Node &rhs)
+            bool operator>(Node &rhs)
             {
                 return mLabel > rhs.mLabel;
             }
 
-            bool operator>=(const Node &rhs)
+            bool operator>=(Node &rhs)
             {
                 return mLabel >= rhs.mLabel;
             }
-        } // end struct
+        }; // end struct
 
-        struct Data
-        {
-            Node   *mNode;
-            string mItem;
-
-            Data()
-            {
-                mNode = NULL;
-                mItem = "";
-            }
-
-            Data(Node *node, string item)
-            {
-                mNode = node;
-                mItem = item;
-            }
-
-            ~Data()
-            {
-                mNode = NULL;
-                mItem = "";
-            }
-
-            Data& operator=(const Data &rhs)
-            {
-                mNode = rhs.mNode;
-                mItem = rhs.mItem;
-            }
-
-            bool operator==(const Data &rhs)
-            {
-                return mItem == rhs.mItem;
-            }
-
-            bool operator<(const Data &rhs)
-            {
-                return mItem < rhs.mItem;
-            }
-
-            bool operator<=(const Data &rhs)
-            {
-                return mItem <= rhs.mItem;
-            }
-
-            bool operator>(const Data &rhs)
-            {
-                return mItem > rhs.mItem;
-            }
-
-            bool operator>=(const Data &rhs)
-            {
-                return mItem >= rhs.mItem;
-            }
-        } // end struct
-
-        Node *mRootNode;
         int  mCount;
+        int  mMinimumSupport;
+        Node *mRootNode;
     // end private
 
     public:
         Trie();
         ~Trie();
 
-        Node* getRootNode();
-        int   getCount();
-
+        int  getCount();
         void insert(stringstream &itemset);
-        void prune(Node &*node, const int minSupport);
+        void prune(Node *node);
         void read(istream &dataset);
         void removeSubtree(Node *rootNode);
-        void write(ostream &target);
+        void write(ostream &target, const int &limit);
+        void write(ostream &target, const int &limit, Node *node, int depth);
     // end public
-} // end class
+}; // end class
 
 /* Purpose:  Constructor for trie
  *     Pre:  None
@@ -160,14 +105,6 @@ Trie::~Trie()
     removeSubtree(mRootNode);
 }
 
-/* Purpose:  Get the root node of the trie
- *     Pre:  None
- *    Post:  Returns root node
- ******************************************************************/
-Node* Trie::getRootNode()
-{
-    return mRootNode;
-} // end function
 
 /* Purpose:  Get the number of nodes in the trie
  *     Pre:  None
@@ -196,23 +133,29 @@ void Trie::insert(stringstream &itemset)
             delete newNode;
         }
 
-        tmp = tmp->mList.search(Node(item));
+        tmp = tmp->mList.search(tmp);
         tmp->mSupport++;
     }
 }
 
-void Trie::prune(node, minSupport){
-   Node *tmp;
-   int i = LinkedList.getCount();
+void Trie::prune(Node *node)
+{
+    Node *tmp;
+    int count;
 
-   if(node.support < minSupport)
-      removeSubtree(node);
-   Else{
-      while(node != NULL){
-         tmp = node->Linkedlist.getData(i);
-         i++;
-         prune(tmp, minSupport);
-   }
+    if(node->mSupport < mMinimumSupport)
+    {
+        removeSubtree(node);
+    }
+    else
+    {
+        count = node->mList.getCount();
+        for (int i = 0; i < count; i++)
+        {
+            tmp = node->mList.getData(i);
+            prune(tmp);
+        }
+    }
 }
 
 /* Purpose:  Read a dataset
@@ -235,21 +178,49 @@ void Trie::read(istream &dataset)
     }
 }
 
-void Trie::removeSubtree(Node *rootNode){
-   Node *tmp;
-   int i = LinkedList.getCount();
-   
-   while(node !=NULL){
-      tmp = node->LinkedList.getData(i);
-      i++;
-      removeSubtree(tmp);
-      tmp = NULL;
-      delete tmp;
-   }
+void Trie::removeSubtree(Node *node)
+{
+    Node *tmp;
+    int count;
+
+    count = node->mList.getCount();
+
+    for (int i = 0; i < count; i++)
+    {
+        tmp = node->mList.getData(i);
+        removeSubtree(tmp);
+    }
+    delete node;
+    node = NULL;
 }
 
 
+void Trie::write(ostream &target, const int &limit)
+{
+    write(target, limit, mRootNode, 0);
+}
 
-void Trie::write(ostream target);
+
+void Trie::write(ostream &target, const int &limit, Node *node, int depth)
+{
+    Node *tmp;
+    int count;
+
+    depth++;
+
+    if (depth > limit)
+    {
+        return;
+    }
+
+    count = node->mList.getCount();
+    for (int i = 0; i < count; i++)
+    {
+        target << node->mLabel << ", ";
+        tmp = node->mList.getData(i);
+        write(target, limit, tmp, depth);
+    }
+    printf("\n");
+}
 
 #endif

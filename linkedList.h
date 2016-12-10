@@ -65,7 +65,7 @@ class LinkedList
       void display();
       bool insert(T data);
       bool isEmpty();
-      int  isExist(T searchKey);
+      bool isExist(T searchKey);
       bool remove(T searchKey);
       T    removeAt(int index);
       T    search(T searchKey);
@@ -293,25 +293,23 @@ bool LinkedList<T>::isEmpty()
  *  Purpose:  To determine if a specific value exists in the list or not
  *****************************************************************************/
 template <typename T>
-int LinkedList<T>::isExist(T searchKey)
+bool LinkedList<T>::isExist(T searchKey)
 {
-   int     i, index;
-   Node<T> *tmp;
+    bool    found = false;
+    Node<T> *tmp;
 
-   index = -1;
+    tmp = mHead;
+    while (tmp != NULL && !found)
+    {
+        if (tmp->mData == searchKey)
+            found = true;
+        else if (tmp->mData > searchKey)
+            tmp = NULL;
+        else
+            tmp = tmp->mNext;
+    }
 
-   tmp = mHead;
-   for (i = 0; tmp != NULL && !found; i++)
-   {
-      if (tmp->mData == searchKey)
-         index = i;
-      else if (tmp->mData > searchKey)
-         tmp = NULL;
-      else
-         tmp = tmp->mNext;
-   }
-
-   return index;
+    return found;
 }
 
 
@@ -428,7 +426,7 @@ T LinkedList<T>::removeAt(int index)
  *  Purpose:  To retrieve the specified nodes in the list using [] operator
  *****************************************************************************/
 template <typename T>
- T LinkedList<T>::operator[](int index)
+T LinkedList<T>::operator[](int index)
 {
    return getData(index);
 }
@@ -441,7 +439,7 @@ template <typename T>
  *   Author:  Matthew James Harrison
  *************************************************************************/
 template <typename T>
-int LinkedList<T>::search(T searchKey)
+T LinkedList<T>::search(T searchKey)
 {
    Node<T> *tmp;
    T       data;
@@ -449,14 +447,22 @@ int LinkedList<T>::search(T searchKey)
    data = T();
 
    tmp = mHead;
-   while (tmp != NULL && !found)
+   while (tmp != NULL)
    {
       if (tmp->mData == searchKey)
-         data = tmp->mData;
+      {
+          data = tmp->mData;
+          break;
+      }
+
       else if (tmp->mData > searchKey)
-         tmp = NULL;
+      {
+          tmp = NULL;
+      }
       else
-         tmp = tmp->mNext;
+      {
+          tmp = tmp->mNext;
+      }
    }
 
    return data;
