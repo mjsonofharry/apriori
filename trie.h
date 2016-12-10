@@ -135,7 +135,7 @@ class Trie
         int   getCount();
 
         void insert(stringstream &itemset);
-        void prune();
+        void prune(Node &*node, const int minSupport);
         void read(istream &dataset);
         void removeSubtree(Node *rootNode);
         void write(ostream &target);
@@ -182,7 +182,6 @@ void Trie::insert(stringstream &itemset)
 {
     Node *tmp, *newNode;
     string item;
-    int index;
 
     tmp = mRootNode;
 
@@ -202,7 +201,19 @@ void Trie::insert(stringstream &itemset)
     }
 }
 
-void Trie::prune();
+void Trie::prune(node, minSupport){
+   Node *tmp;
+   int i = LinkedList.getCount();
+
+   if(node.support < minSupport)
+      removeSubtree(node);
+   Else{
+      while(node != NULL){
+         tmp = node->Linkedlist.getData(i);
+         i++;
+         prune(tmp, minSupport);
+   }
+}
 
 /* Purpose:  Read a dataset
  *     Pre:  Input stream
@@ -224,7 +235,21 @@ void Trie::read(istream &dataset)
     }
 }
 
-void Trie::removeSubtree(Node *rootNode);
+void Trie::removeSubtree(Node *rootNode){
+   Node *tmp;
+   int i = LinkedList.getCount();
+   
+   while(node !=NULL){
+      tmp = node->LinkedList.getData(i);
+      i++;
+      removeSubtree(tmp);
+      tmp = NULL;
+      delete tmp;
+   }
+}
+
+
+
 void Trie::write(ostream target);
 
 #endif

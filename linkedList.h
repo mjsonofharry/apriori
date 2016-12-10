@@ -446,7 +446,7 @@ int LinkedList<T>::search(T searchKey)
    Node<T> *tmp;
    T       data;
 
-   out = T();
+   data = T();
 
    tmp = mHead;
    while (tmp != NULL && !found)
