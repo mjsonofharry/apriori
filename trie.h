@@ -207,6 +207,7 @@ void Trie::read(ifstream &dataset)
 
         insert(itemset);
         itemset.str(string());
+        itemset.clear();
     }
 }
 
