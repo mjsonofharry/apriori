@@ -42,29 +42,29 @@ class Trie
                 mList.clear();
             } //end function
 
-            bool operator==(Node &rhs)
+            bool operator==(Node *rhs)
             {
-                return mLabel == rhs.mLabel;
+                return mLabel == rhs->mLabel;
             }
 
-            bool operator<(Node &rhs)
+            bool operator<(Node *rhs)
             {
-                return mLabel < rhs.mLabel;
+                return mLabel < rhs->mLabel;
             }
 
-            bool operator<=(Node &rhs)
+            bool operator<=(Node *rhs)
             {
-                return mLabel <= rhs.mLabel;
+                return mLabel <= rhs->mLabel;
             }
 
-            bool operator>(Node &rhs)
+            bool operator>(Node *rhs)
             {
-                return mLabel > rhs.mLabel;
+                return mLabel > rhs->mLabel;
             }
 
-            bool operator>=(Node &rhs)
+            bool operator>=(Node *rhs)
             {
-                return mLabel >= rhs.mLabel;
+                return mLabel >= rhs->mLabel;
             }
         }; // end struct
 
@@ -80,7 +80,7 @@ class Trie
         int  getCount();
         void insert(stringstream &itemset);
         void prune(Node *node);
-        void read(istream &dataset);
+        void read(ifstream &dataset);
         void removeSubtree(Node *rootNode);
         void write(ostream &target, const int &limit);
         void write(ostream &target, const int &limit, Node *node, int depth);
@@ -117,24 +117,34 @@ int Trie::getCount()
 
 void Trie::insert(stringstream &itemset)
 {
-    Node *tmp, *newNode;
+    Node *node, *newNode;
     string item;
 
-    tmp = mRootNode;
+    node = mRootNode;
 
     while (itemset)
     {
         itemset >> item;
 
         newNode = new Node(item);
-
-        if (!tmp->mList.insert(newNode))
+        if (newNode == NULL)
         {
-            delete newNode;
+            exit(1);
         }
 
-        tmp = tmp->mList.search(tmp);
-        tmp->mSupport++;
+        if (node->mList.insert(newNode))
+        {
+            node = node->mList.search(newNode);
+            node->mSupport++;
+        }
+        else
+        {
+            node = node->mList.search(newNode);
+            node->mSupport++;
+
+            delete newNode;
+            newNode = NULL;
+        }
     }
 }
 
@@ -162,7 +172,7 @@ void Trie::prune(Node *node)
  *     Pre:  Input stream
  *    Post:  Inserts each itemset from the dataset into the trie
  ******************************************************************/
-void Trie::read(istream &dataset)
+void Trie::read(ifstream &dataset)
 {
     stringstream itemset;
     string str;
@@ -171,7 +181,13 @@ void Trie::read(istream &dataset)
     while (dataset)
     {
         getline(dataset, str);
+        if (str == "")
+        {
+            break;
+        }
         itemset.str() = str;
+        cout << "\tInserting: " << str << "\n";
+
 
         insert(itemset);
         itemset.str() = "";
@@ -220,7 +236,7 @@ void Trie::write(ostream &target, const int &limit, Node *node, int depth)
         tmp = node->mList.getData(i);
         write(target, limit, tmp, depth);
     }
-    printf("\n");
+    target << endl;
 }
 
 #endif
