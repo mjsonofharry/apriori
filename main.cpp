@@ -7,10 +7,17 @@ int main()
     ofstream fout;
 
     fin.open("T5.N0.01K.D0.02K.txt");
+    printf("Opened %s", "T5.N0.01K.D0.02K.txt\n");
     fout.open("output_test.txt");
+    printf("Opened %s", "output_test.txt\n");
 
     trie.read(fin);
-    trie.write(fout, 2);
+    trie.prune(2);
+
+    for (int i = 0; i < 9; i++)
+    {
+        trie.write(fout, i);
+    }
 
     return 0;
 }

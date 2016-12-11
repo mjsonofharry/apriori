@@ -5,223 +5,172 @@
 
 using namespace std;
 
-const int STARTING_BUFFER = 8;
+const int INITIAL_BUFFER_SIZE = 8;
 
 class Node
 {
     private:
         Node   **mChild;
-        int    mCount;
         int    mBuffer;
+        int    mCount;
 
         string mLabel;
         int    mSupport;
 
-        void upsize();
+        void resize();
+
     public:
+        bool flag;
+
         Node();
         Node(string label);
         ~Node();
 
-        void   add(Node *newNode);
+        void   add(string item);
         Node*  get(const string &searchKey);
-        Node*  get(const int &index);
         int    getCount();
-        int    getIndex(string searchKey);
         string getLabel();
-        bool   isFrequent(const int minimum);
+        int    getSupport();
 
         Node* operator[](const int &index);
         void  operator++();
-}; // end class
+};
 
 Node::Node()
 {
-    mBuffer  = 0;
-    mChild   = NULL;
-    mCount   = 0;
+    mChild  = NULL;
+    mBuffer = 0;
+    mCount  = 0;
 
     mLabel   = "";
     mSupport = 0;
-} // end constructor
 
+    flag = false;
+}
 
 Node::Node(string label)
 {
-    mBuffer  = 0;
-    mChild   = NULL;
-    mCount   = 0;
+    mChild  = new Node*[INITIAL_BUFFER_SIZE];
+    mBuffer = INITIAL_BUFFER_SIZE;
+    mCount  = 0;
+
+    if (mChild == NULL)
+    {
+        fprintf(stderr, "CHILDLESS NODE");
+        perror(NULL);
+        exit(1);
+    }
+
+    for (int i = 0; i < INITIAL_BUFFER_SIZE; i++)
+    {
+        mChild[i] = NULL;
+    }
 
     mLabel   = label;
-    mSupport = 0;
-} // end constructor
+    mSupport = 1;
 
+    flag = false;
+}
 
 Node::~Node()
 {
-    int i;
-
-    if (mChild != NULL)
+    for (int i = 0; i < mBuffer; i++)
     {
-        for (i = 0; i < mCount; i++)
-        {
-            delete mChild[i];
-        }
+        mChild[i] = NULL;
+    }
 
-        delete [] mChild;
-        mChild = NULL;
-    } // end if
-} // end destructor
+    delete [] mChild;
+    mChild = NULL;
+}
 
-
-void Node::add(Node *newNode)
+void Node::add(string label)
 {
+    Node *newNode = new Node(label);
+    if (newNode == NULL)
+    {
+        fprintf(stderr, "UNABLE TO ALLOCATE NEW NODE");
+        perror(NULL);
+        exit(1);
+    }
+
     if (mBuffer <= mCount + 1)
     {
-        upsize();
-    } // end if
-
-    mCount++;
+        resize();
+    }
 
     mChild[mCount] = newNode;
-
-    printf("\tInserted new node (%s), count incremented (%d)\n", newNode->getLabel().c_str(), newNode->getCount());
-} // end function
-
-
-Node* Node::get(const int &index)
-{
-    return mChild[index];
-} // end function
-
+    mCount++;
+}
 
 Node* Node::get(const string &searchKey)
 {
-    Node *child;
-    int i;
+    if (mChild == NULL)
+    {
+        fprintf(stderr, "NULL CHILDREN");
+        perror(NULL);
+    }
 
-    child = NULL;
-
-    for (i = 0; i < mCount; i++)
+    for (int i = 0; i < mCount && mChild[i] != NULL; i++)
     {
         if (mChild[i]->mLabel == searchKey)
         {
-            child = mChild[i];
-        } // end if
-    } // end for
+            return mChild[i];
+        }
+    }
 
-    return child;
-} // end function
-
+    return NULL;
+}
 
 int Node::getCount()
 {
     return mCount;
-} // end function
-
-
-int Node::getIndex(string searchKey)
-{
-    int childIndex, i;
-
-    childIndex = -1;
-
-    for (i = 0; i < mCount; i++)
-    {
-        if (mChild[i]->mLabel == searchKey)
-        {
-            childIndex = i;
-            break;
-        } // end if
-    } // end for
-
-    return childIndex;
-} // end function
-
+}
 
 string Node::getLabel()
 {
     return mLabel;
 }
 
-
-bool Node::isFrequent(const int minimum)
+int Node::getSupport()
 {
-    return mSupport >= minimum;
+    return mSupport;
 }
 
-
-void Node::upsize()
+void Node::resize()
 {
-    Node **array;
-    int i;
-
-    printf("\tBuffer too small (%d) to increase number of nodes (%d), upsizing\n", mBuffer, mCount);
-
-    /* buffer is zero, so set it to default */
-    if (mBuffer == 0)
+    Node **array = new Node*[mBuffer * 2];
+    mBuffer *= 2;
+    if (array == NULL)
     {
-        mBuffer = STARTING_BUFFER;
+        fprintf(stderr, "UNABLE TO ALLOCATE NEW ARRAY");
+        perror(NULL);
+        exit(1);
     }
-    /* double the current buffer */
-    else
-    {
-        mBuffer *= 2;
-    } // end if
 
-    /* array is null, so allocate it */
-    if (mChild == NULL)
+    for (int i = 0; i < mCount; i++)
     {
-        mChild = new Node*[mBuffer];
-        for (i = 0; i < mBuffer; i++)
-        {
-            mChild[i] = NULL;
-        } // end for
+        array[i] = mChild[i];
+        mChild[i] = NULL;
     }
-    /* array already exists, so copy to a new larger one */
-    else
+
+    for (int i = mCount; i < mBuffer; i++)
     {
-        /* allocate heap space for new array */
-        array = new Node*[mBuffer];
-        if (array == NULL)
-        {
-            perror(NULL);
-            exit(1);
-        } // end if
+        array[i] = NULL;
+    }
 
-        /* copy old array data to new array, then sanitize old array */
-        for (i = 0; i < mCount; i++)
-        {
-            array[i] = mChild[i];
-        } // end for
-        for (; i < mBuffer; i++)
-        {
-            array[i] = NULL;
-        } // end for
-        for (i = 0; i < mCount; i++)
-        {
-            mChild[i] = NULL;
-        } // end for
+    delete [] mChild;
+    mChild = array;
+    array  = NULL;
+}
 
-        delete [] mChild;
-        mChild = array;
-        array  = NULL;
-    } // end if
-
-    printf("\tNew buffer allocated (%d)\n", mBuffer);
-} // end function
-
-
-Node* Node::operator[](const int &index)
+Node* Node::operator[](const int &i)
 {
-    return mChild[index];
-} // end operator overload
-
+    return mChild[i];
+}
 
 void Node::operator++()
 {
     mSupport++;
-} // end operator overload
-
+}
 
 #endif

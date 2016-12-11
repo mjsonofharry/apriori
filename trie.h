@@ -1,187 +1,156 @@
 #ifndef TRIE_H
 #define TRIE_H
 
-#include <iostream>
-#include <string>
+#include <fstream>
 #include <sstream>
+#include <string>
+
 #include "node.h"
-#include "stack.h"
+
+const string ROOT_LABEL = "TRIE_ROOT_IGNORE";
 
 using namespace std;
 
 class Trie
 {
     private:
-        int mMinimumSupport;
         Node *mRootNode;
-    // end private
 
     public:
         Trie();
         ~Trie();
 
         void insert(stringstream &itemset);
-        void prune(Node *node);
-        void removeSubtree(Node *rootNode);
+        void prune(const int &support);
+        void prune(Node *node, const int &support);
+        void removeSubtree(Node *node);
 
         void read(ifstream &dataset);
-        void write(ostream &target, const int &limit);
-        void write(ostream &target, const int &limit, Node *node, int depth);
-    // end public
-}; // end class
-
+        void write(ostream &target, const int &klimit);
+        void wdfs(ostream &target, const int &klimit, Node *node, int depth, string path);
+};
 
 Trie::Trie()
 {
-    mRootNode = new Node();
+    mRootNode = new Node(ROOT_LABEL);
     if (mRootNode == NULL)
     {
+        fprintf(stderr, "UNABLE TO CREATE ROOT NODE");
         perror(NULL);
         exit(1);
     }
 }
-
 
 Trie::~Trie()
 {
     removeSubtree(mRootNode);
 }
 
-
 void Trie::insert(stringstream &itemset)
 {
-    Node *node, *newNode;
+    Node *node;
     string item;
-    int index;
+
+    printf("Inserting: ");
 
     node = mRootNode;
 
     while (itemset)
     {
-        /* retrieve a single item */
+        node++;
+
         itemset >> item;
-        cout << "\tInserting item: " << item << "\n";
 
-        /* item NOT found */
-        if ((index = node->getIndex(item)) == -1)
+        printf("%s ", item.c_str());
+
+        if (node->get(item) == NULL)
         {
-            printf("\tItem does not already exist, creating new\n");
-            /* allocate space in the heap */
-            newNode = new Node(item);
-            if (newNode == NULL)
-            {
-                perror(NULL);
-                exit(1);
-            } // end if
-
-            node->add(newNode);
-        } // end if
-
-        /* retrieve an index */
-        if ((index = node->getIndex(item)) == -1)
-        {
-            printf("\tFailed to insert or find node\n");
-            perror(NULL);
-            exit(1);
+            node->add(item);
         }
-        else
-        {
-            node = (*node)[index];
-            node++;
-        }
-    } // end while
-} // end function
 
-void Trie::prune(Node *node)
+        node = node->get(item);
+    }
+}
+
+
+void Trie::prune(const int &support)
 {
-    Node *tmp;
-    int count, i;
+    prune(mRootNode, support);
+}
 
-    if(node->isFrequent(mMinimumSupport))
+
+void Trie::prune(Node *node, const int &support)
+{
+    if (node->getSupport() < support)
     {
         removeSubtree(node);
     }
     else
     {
-        count = node->getCount();
-        for (i = 0; i < count; i++)
+        for (int i = 0; i < node->getCount(); i++)
         {
-            tmp = (*node)[i];
-            prune(tmp);
-        } // end for
-    } // end else
-} // end function
+            prune((*node)[i], support);
+        }
+    }
+}
 
-/* Purpose:  Read a dataset
- *     Pre:  Input stream
- *    Post:  Inserts each itemset from the dataset into the trie
- ******************************************************************/
+void Trie::removeSubtree(Node *node)
+{
+    if (node != NULL)
+    {
+        for (int i = 0; i < node->getCount(); i++)
+        {
+            removeSubtree((*node)[i]);
+        }
+
+        delete node;
+        node = NULL;
+    }
+}
+
 void Trie::read(ifstream &dataset)
 {
     stringstream itemset;
-    string str;
+    string       str;
 
-    /* read each itemset */
     while (dataset)
     {
         getline(dataset, str);
         if (str == "")
         {
             break;
-        } // end if
+        }
+        printf("Read: %s\n", str.c_str());
+
         itemset.str(str);
-        cout << "Inserting itemset: " << str << "\n";
-
-
         insert(itemset);
+
         itemset.str(string());
         itemset.clear();
-    } // end while
-} // end function
+    }
+}
 
-void Trie::removeSubtree(Node *node)
+void Trie::write(ostream &target, const int &klimit)
 {
-    Node *tmp;
-    int count, i;
+    printf("%d-itemset\n", klimit);
+    wdfs(target, klimit, mRootNode, 0, "");
+    printf("\n");
+}
 
-    count = node->getCount();
-
-    for (i = 0; i < count; i++)
-    {
-        tmp = (*node)[i];
-        removeSubtree(tmp);
-    } // end for
-    delete node;
-    node = NULL;
-} // end function
-
-
-void Trie::write(ostream &target, const int &limit)
+void Trie::wdfs(ostream &target, const int &klimit, Node *node, int depth, string path)
 {
-    Stack<Node*> stack;
-    Node *node;
-    int count, i;
+    node->flag = true;
 
-    if (mRootNode != NULL)
+    for (int i = 0; i < node->getCount(); i++)
     {
-        stack.push(mRootNode);
-
-        while (!stack.isEmpty())
+        if (depth == klimit)
         {
-            node = stack.pop();
-            if (node->getLabel() != "")
-            {
-                target << node->getLabel() << ", ";
-            }
-
-            count = node->getCount();
-            for (i = 0; i < count; i++)
-            {
-                stack.push((*node)[i]);
-            }
+            printf("%s (%d)\n", path.c_str(), node->getSupport());
         }
-
-        stack.clear();
+        else if (!(*node)[i]->flag)
+        {
+            wdfs(target, klimit, (*node)[i], depth + 1, path + " " + (*node)[i]->getLabel());
+        }
     }
 }
 
