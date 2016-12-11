@@ -13,6 +13,7 @@ class Node
         Node   **mChild;
         int    mCount;
         int    mBuffer;
+
         string mLabel;
         int    mSupport;
 
@@ -36,8 +37,8 @@ class Node
 
 Node::Node()
 {
-    mBuffer  = STARTING_BUFFER;
-    mChild   = new Node*[STARTING_BUFFER];
+    mBuffer  = 0;
+    mChild   = NULL;
     mCount   = 0;
 
     mLabel   = "";
@@ -47,8 +48,8 @@ Node::Node()
 
 Node::Node(string label)
 {
-    mBuffer  = STARTING_BUFFER;
-    mChild   = new Node*[STARTING_BUFFER];
+    mBuffer  = 0;
+    mChild   = NULL;
     mCount   = 0;
 
     mLabel   = label;
@@ -58,8 +59,15 @@ Node::Node(string label)
 
 Node::~Node()
 {
+    int i;
+
     if (mChild != NULL)
     {
+        for (i = 0; i < mCount; i++)
+        {
+            delete mChild[i];
+        }
+
         delete [] mChild;
         mChild = NULL;
     } // end if
@@ -68,13 +76,14 @@ Node::~Node()
 
 void Node::add(Node *newNode)
 {
-    if (mCount >= mBuffer)
+    if (mBuffer <= mCount + 1)
     {
         upsize();
     }
 
-    mChild[mCount] = newNode;
     mCount++;
+
+    mChild[mCount] = newNode;
 } // end function
 
 
@@ -145,9 +154,18 @@ void Node::upsize()
     Node **array;
     int i;
 
-    printf("\tBuffer too small (%d) for number of nodes (%d), upsizing\n", mBuffer, mCount);
+    printf("\tBuffer too small (%d) to increase number of nodes (%d), upsizing\n", mBuffer, mCount);
 
-    mBuffer *= 2;
+    if (mBuffer == 0)
+    {
+        mBuffer = STARTING_BUFFER;
+    }
+    else
+    {
+        mBuffer *= 2;
+    }
+
+    /* allocate heap space for new array */
     array = new Node*[mBuffer];
     if (array == NULL)
     {
@@ -155,7 +173,7 @@ void Node::upsize()
         exit(1);
     } // end if
 
-    /* copy old memory over to new array */
+    /* copy old array data to new array, then sanitize old array */
     for (i = 0; i < mCount; i++)
     {
         array[i] = mChild[i];
@@ -164,15 +182,16 @@ void Node::upsize()
     {
         array[i] = NULL;
     } // end for
-
     for (i = 0; i < mCount; i++)
     {
-        delete mChild[i];
         mChild[i] = NULL;
-    }
+    } // end for
 
+    delete [] mChild;
     mChild = array;
     array  = NULL;
+
+    printf("\tBuffer resized (%d)\n", mBuffer);
 } // end function
 
 
