@@ -34,7 +34,6 @@ class Trie
 Trie::Trie()
 {
     mRootNode = new Node();
-
     if (mRootNode == NULL)
     {
         perror(NULL);
@@ -66,6 +65,7 @@ void Trie::insert(stringstream &itemset)
         /* item NOT found */
         if ((index = node->getIndex(item)) == -1)
         {
+            printf("\tItem does not already exist, creating new\n");
             /* allocate space in the heap */
             newNode = new Node(item);
             if (newNode == NULL)
@@ -76,11 +76,19 @@ void Trie::insert(stringstream &itemset)
 
             node->add(newNode);
         } // end if
-        cout << "\n";
 
-        index = node->getIndex(item);
-        node = (*node)[index];
-        node++;
+        /* retrieve an index */
+        if ((index = node->getIndex(item)) == -1)
+        {
+            printf("\tFailed to insert or find node\n");
+            perror(NULL);
+            exit(1);
+        }
+        else
+        {
+            node = (*node)[index];
+            node++;
+        }
     } // end while
 } // end function
 

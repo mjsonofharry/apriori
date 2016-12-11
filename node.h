@@ -79,11 +79,13 @@ void Node::add(Node *newNode)
     if (mBuffer <= mCount + 1)
     {
         upsize();
-    }
+    } // end if
 
     mCount++;
 
     mChild[mCount] = newNode;
+
+    printf("\tInserted new node (%s), count incremented (%d)\n", newNode->getLabel().c_str(), newNode->getCount());
 } // end function
 
 
