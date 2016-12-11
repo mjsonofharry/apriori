@@ -156,42 +156,57 @@ void Node::upsize()
 
     printf("\tBuffer too small (%d) to increase number of nodes (%d), upsizing\n", mBuffer, mCount);
 
+    /* buffer is zero, so set it to default */
     if (mBuffer == 0)
     {
         mBuffer = STARTING_BUFFER;
     }
+    /* double the current buffer */
     else
     {
         mBuffer *= 2;
-    }
-
-    /* allocate heap space for new array */
-    array = new Node*[mBuffer];
-    if (array == NULL)
-    {
-        perror(NULL);
-        exit(1);
     } // end if
 
-    /* copy old array data to new array, then sanitize old array */
-    for (i = 0; i < mCount; i++)
+    /* array is null, so allocate it */
+    if (mChild == NULL)
     {
-        array[i] = mChild[i];
-    } // end for
-    for (; i < mBuffer; i++)
+        mChild = new Node*[mBuffer];
+        for (i = 0; i < mBuffer; i++)
+        {
+            mChild[i] = NULL;
+        } // end for
+    }
+    /* array already exists, so copy to a new larger one */
+    else
     {
-        array[i] = NULL;
-    } // end for
-    for (i = 0; i < mCount; i++)
-    {
-        mChild[i] = NULL;
-    } // end for
+        /* allocate heap space for new array */
+        array = new Node*[mBuffer];
+        if (array == NULL)
+        {
+            perror(NULL);
+            exit(1);
+        } // end if
 
-    delete [] mChild;
-    mChild = array;
-    array  = NULL;
+        /* copy old array data to new array, then sanitize old array */
+        for (i = 0; i < mCount; i++)
+        {
+            array[i] = mChild[i];
+        } // end for
+        for (; i < mBuffer; i++)
+        {
+            array[i] = NULL;
+        } // end for
+        for (i = 0; i < mCount; i++)
+        {
+            mChild[i] = NULL;
+        } // end for
 
-    printf("\tBuffer resized (%d)\n", mBuffer);
+        delete [] mChild;
+        mChild = array;
+        array  = NULL;
+    } // end if
+
+    printf("\tNew buffer allocated (%d)\n", mBuffer);
 } // end function
 
 
