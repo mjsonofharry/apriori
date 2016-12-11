@@ -36,82 +36,77 @@ class Node
         void  operator++();
 };
 
-Node::Node()
-{
-    mChild  = NULL;
-    mBuffer = 0;
-    mCount  = 0;
-
-    mLabel   = "";
-    mSupport = 0;
-
-    flag = false;
-}
 
 Node::Node(string label)
 {
     mChild  = new Node*[INITIAL_BUFFER_SIZE];
-    mBuffer = INITIAL_BUFFER_SIZE;
-    mCount  = 0;
-
     if (mChild == NULL)
     {
-        fprintf(stderr, "CHILDLESS NODE");
-        perror(NULL);
+        fprintf(stderr, "Node::Node: ERROR: MEMORY ALLOCATION FAILURE\n");
         exit(1);
     }
 
-    for (int i = 0; i < INITIAL_BUFFER_SIZE; i++)
+    mBuffer = INITIAL_BUFFER_SIZE;
+    for (int i = 0; i < mBuffer; i++)
     {
         mChild[i] = NULL;
     }
+    mCount = 0;
 
     mLabel   = label;
     mSupport = 1;
 
     flag = false;
+
+    printf("Created new node with label %s and buffer %d\n", mLabel.c_str(), mBuffer);
 }
 
 Node::~Node()
 {
-    for (int i = 0; i < mBuffer; i++)
+    if (mChild != NULL)
     {
-        mChild[i] = NULL;
+        delete mChild;
+        mChild = NULL;
     }
-
-    delete [] mChild;
-    mChild = NULL;
 }
 
 void Node::add(string label)
 {
-    Node *newNode = new Node(label);
+    Node *newNode;
+
+    newNode = new Node(label);
     if (newNode == NULL)
     {
-        fprintf(stderr, "UNABLE TO ALLOCATE NEW NODE");
-        perror(NULL);
+        fprintf(stderr, "Node::add: ERROR: MEMORY ALLOCATION FAILURE\n");
         exit(1);
     }
 
     if (mBuffer <= mCount + 1)
     {
+        printf("Node::add: Warning: resizing buffer (%d) to store %d nodes\n", mBuffer, mCount + 1);
         resize();
     }
 
     mChild[mCount] = newNode;
     mCount++;
+
+    newNode = NULL;
 }
 
 Node* Node::get(const string &searchKey)
 {
     if (mChild == NULL)
     {
-        fprintf(stderr, "NULL CHILDREN");
-        perror(NULL);
+        return NULL;
     }
 
-    for (int i = 0; i < mCount && mChild[i] != NULL; i++)
+    for (int i = 0; i < mCount; i++)
     {
+        if (mChild[i] == NULL)
+        {
+            return NULL;
+        }
+
         if (mChild[i]->mLabel == searchKey)
         {
             return mChild[i];
@@ -138,18 +133,19 @@ int Node::getSupport()
 
 void Node::resize()
 {
-    Node **array = new Node*[mBuffer * 2];
+
     mBuffer *= 2;
+
+    Node **array = new Node*[mBuffer];
     if (array == NULL)
     {
-        fprintf(stderr, "UNABLE TO ALLOCATE NEW ARRAY");
-        perror(NULL);
+        fprintf(stderr, "Node::resize: ERROR: MEMORY ALLOCATION FAILURE\n");
         exit(1);
     }
 
     for (int i = 0; i < mCount; i++)
     {
-        array[i] = mChild[i];
+        array[i]  = mChild[i];
         mChild[i] = NULL;
     }
 
@@ -158,7 +154,6 @@ void Node::resize()
         array[i] = NULL;
     }
 
-    delete [] mChild;
     mChild = array;
     array  = NULL;
 }

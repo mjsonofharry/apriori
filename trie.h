@@ -5,7 +5,7 @@
 #include <sstream>
 #include <string>
 
-#include "linkedList.h"
+#include "node.h"
 
 const string ROOT_LABEL = "TRIE_ROOT_IGNORE";
 
@@ -14,103 +14,7 @@ using namespace std;
 class Trie
 {
     private:
-        struct Label
-        {
-            string mItem;
-            Node   *mChild;
-
-            Label()
-            {
-                mItem  = "";
-                mChild = NULL;
-            } // end constructor
-
-            Label(string item, Node *child)
-            {
-                mItem  = item;
-                mChild = child;
-            } // end constructor
-
-            ~Label()
-            {
-                mChild = NULL;
-            } // end destructor
-
-            void operator=(Label &rhs)
-            {
-                mItem  = rhs.item;
-                mChild = rhs.child;
-            } // end operator
-
-            bool operator==(Label &rhs)
-            {
-                return mItem == rhs.mItem;
-            } // end operator
-
-            bool operator==(const string &rhs)
-            {
-                return mItem == rhs;
-            } // end operator
-
-            bool operator<(Label &rhs)
-            {
-                return mItem < rhs.mItem;
-            } // end operator
-
-            bool operator<(const string &rhs)
-            {
-                return mItem < rhs;
-            } // end operator
-
-            bool operator<=(Label &rhs)
-            {
-                return mItem <= rhs.mItem;
-            } // end operator
-
-            bool operator<=(const string &rhs)
-            {
-                return mItem <= rhs;
-            } // end operator
-
-            bool operator>(Label &rhs)
-            {
-                return mItem > rhs.mItem;
-            } // end operator
-
-            bool operator>(const string &rhs)
-            {
-                return mItem > rhs;
-            } // end operator
-
-            bool operator>=(Label &rhs)
-            {
-                return mItem >= rhs.mItem;
-            } // end operator
-
-            bool operator>=(const string &rhs)
-            {
-                return mItem >= rhs;
-            } // end operator
-        }; // end struct
-
-        struct Node
-        {
-            LinkedList<Label> mList;
-            bool flag;
-
-            Node()
-            {
-                flag = false;
-            } // end constructor
-
-            ~Node()
-            {
-                mList.clear();
-            } // end destructor
-        }; // end struct
-
         Node *mRootNode;
-    // end private
 
     public:
         Trie();
@@ -124,24 +28,27 @@ class Trie
         void read(ifstream &dataset);
         void write(ostream &target, const int &klimit);
         void wdfs(ostream &target, const int &klimit, Node *node, int depth, string path);
-    // end public
-}; // end class
+};
 
 Trie::Trie()
 {
-    mRootNode = new Node();
-} // end constructor
+    mRootNode = new Node(ROOT_LABEL);
+    if (mRootNode == NULL)
+    {
+        fprintf(stderr, "Trie::Trie: MEMORY ALLOCATION FAILURE");
+        exit(1);
+    }
+}
 
 Trie::~Trie()
 {
     removeSubtree(mRootNode);
-} // end denstructor
+}
 
 void Trie::insert(stringstream &itemset)
 {
-    Node *node, *newNode, *tmp;
+    Node *node;
     string item;
-    int index;
 
     printf("Inserting: ");
 
@@ -149,35 +56,30 @@ void Trie::insert(stringstream &itemset)
 
     while (itemset)
     {
+        node++;
+
         itemset >> item;
-        printf("%s ", item.c_str());
 
-        /* check for the label and create it if necessary */
-        if (!node->mList.isExist(item))
+        printf("Adding: %s\n", item.c_str());
+
+        /* Item not in node's list */
+        if (node->get(item) == NULL)
         {
-            newNode = new Node();
-            if (newNode == NULL)
+            node->add(item);
+        }
+
+        if ((node = node->get(item)) == NULL)
+        {
+            printf("Item not found in list. Adding to list\n");
+            node = new Node(item);
+            if (node == NULL)
             {
+                fprintf(stderr, "Trie::insert: ERROR: MEMORY ALLOCATION FAILURE");
                 exit(1);
-            } // end if
-
-            node->mList.insert(Label(item, newNode))
-        } // end if
-
-        /* traverse to the next node */
-        tmp = node->mList[0];
-        for (int i = 0; tmp != NULL; i++)
-        {
-            tmp = node->mList[i];
-
-            if (tmp->mLabel == item)
-            {
-                node = tmp;
-                break;
-            } // end if
-        } // end for
-    } // end while
-} // end function
+            }
+        }
+    }
+}
 
 
 void Trie::prune(const int &support)
