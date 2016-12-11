@@ -1,183 +1,123 @@
-#ifndef NODE_H
-#define NODE_H
+#ifndef TRIE_NODE_H
+#define TRIE_NODE_H
 
 #include <string>
 
-using namespace std;
+#include "linkedList.h"
 
-const int INITIAL_BUFFER_SIZE = 8;
+using namespace std;
 
 class Node
 {
     private:
-        Node   **mChild;
-        int    mBuffer;
-        int    mCount;
+        struct Container
+        {
+            Node  *mChild;
+            string mItem;
+            int    mSupport;
 
-        string mLabel;
-        int    mSupport;
+            Container();
+            ~Container();
 
-        void resize();
+            void  operator=(Container rhs);
+            bool  operator==(Container rhs);
+            bool  operator==(string rhs);
+            bool  operator<(Container rhs);
+            bool  operator<(string rhs);
+            bool  operator<=(Container rhs);
+            bool  operator<=(string rhs);
+            bool  operator>(Container rhs);
+            bool  operator>(string rhs);
+            bool  operator>=(Container rhs);
+            bool  operator>=(string rhs);
+            Node* operator[](int i);
+        }; // end struct
+
+        LinkedList<Container> mList;
+    // end private
 
     public:
-        bool flag;
+        void  insert(Node *newNode);
+        bool  isExist(string item);
+        Node* retrieve(string item);
+        int   subtrees();
 
-        Node();
-        Node(string label);
-        ~Node();
-
-        void   add(string item);
-        Node*  get(const string &searchKey);
-        int    getCount();
-        string getLabel();
-        int    getSupport();
-
-        Node* operator[](const int &index);
         void  operator++();
-};
+    // end public
+}; // end class
 
-
-Node::Node(string label)
+Container::Container()
 {
-    mChild  = new Node*[INITIAL_BUFFER_SIZE];
-    if (mChild == NULL)
-    {
-        fprintf(stderr, "Node::Node: ERROR: MEMORY ALLOCATION FAILURE\n");
-        exit(1);
-    }
+    mChild   = NULL;
+    mItem    = "";
+    mSupport = 0;
+} // end constructor
 
-    mBuffer = INITIAL_BUFFER_SIZE;
-    for (int i = 0; i < mBuffer; i++)
-    {
-        mChild[i] = NULL;
-    }
-    mCount = 0;
-
-    mLabel   = label;
-    mSupport = 1;
-
-    flag = false;
-}
-
-Node::~Node()
+Container::~Container()
 {
-    if (mChild != NULL)
-    {
-        delete mChild;
-        mChild = NULL;
-    }
-}
+    mChild = NULL;
+} // end destructor
 
-void Node::add(string label)
+void Container::operator=(Container rhs)
 {
-    Node *tmp, *newNode;
+    mChild   = rhs.mChild;
+    mItem    = rhs.mItem;
+    mSupport = rhs.mSupport;
+} // end operator
 
-    if ((tmp = get(label)) != NULL)
-    {
-        return;
-    }
-
-    newNode = new Node(label);
-    if (newNode == NULL)
-    {
-        fprintf(stderr, "Node::add: ERROR: MEMORY ALLOCATION FAILURE\n");
-        exit(1);
-    }
-
-    if (mBuffer <= mCount + 1)
-    {
-        resize();
-    }
-
-    mChild[mCount] = newNode;
-    mCount++;
-
-    printf("(new count: %d)\t", mCount);
-
-    newNode = NULL;
-}
-
-Node* Node::get(const string &searchKey)
+bool Container::operator==(Container rhs)
 {
-    if (mChild == NULL)
-    {
-        return NULL;
-    }
+    return mItem == rhs.mItem;
+} // end operator
 
-    for (int i = 0; i < mCount; i++)
-    {
-        if (mChild[i] == NULL)
-        {
-            return NULL;
-        }
-
-        if (mChild[i]->mLabel == searchKey)
-        {
-            return mChild[i];
-        }
-    }
-
-    return NULL;
-}
-
-int Node::getCount()
+bool Container::operator==(string rhs)
 {
-    return mCount;
-}
+    return mItem == rhs;
+} // end operator
 
-string Node::getLabel()
+bool Container::operator<(Container rhs)
 {
-    return mLabel;
-}
+    return mItem < rhs.mItem;
+} // end operator
 
-int Node::getSupport()
+bool Container::operator<(string rhs)
 {
-    return mSupport;
-}
+    return mItem < rhs;
+} // end operator
 
-void Node::resize()
+bool Container::operator<=(Container rhs)
 {
-    if (mChild == NULL)
-    {
-        mBuffer = INITIAL_BUFFER_SIZE;
-    }
-    else
-    {
-        mBuffer *= 2;
-    }
+    return mItem <= rhs.mItem;
+} // end operator
 
-    printf("(new buffer size: %d)", mBuffer);
-
-    Node **array = new Node*[mBuffer];
-    if (array == NULL)
-    {
-        fprintf(stderr, "Node::resize: ERROR: MEMORY ALLOCATION FAILURE\n");
-        exit(1);
-    }
-
-    for (int i = 0; i < mCount; i++)
-    {
-        array[i]  = mChild[i];
-        mChild[i] = NULL;
-    }
-
-    for (int i = mCount; i < mBuffer; i++)
-    {
-        array[i] = NULL;
-    }
-
-    mChild = array;
-    array  = NULL;
-}
-
-Node* Node::operator[](const int &i)
+bool Container::operator<=(string rhs)
 {
-    return mChild[i];
-}
+    return mItem <= rhs;
+} // end operator
 
-void Node::operator++()
+bool Container::operator>(Container rhs)
 {
-    mSupport++;
-}
+    return mItem > rhs.mItem;
+} // end operator
+
+bool Container::operator>(string rhs)
+{
+    return mItem > rhs;
+} // end operator
+
+bool Container::operator>=(Container rhs)
+{
+    return mItem >= rhs.mItem;
+} // end operator
+
+bool Container::operator>=(string rhs)
+{
+    return mItem >= rhs;
+} // end operator
+
+Node* Container::operator[](int i)
+{
+    return mList[i];
+} // end operator
 
 #endif

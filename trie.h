@@ -1,11 +1,12 @@
 #ifndef TRIE_H
 #define TRIE_H
 
+#include <climits>
 #include <fstream>
 #include <sstream>
 #include <string>
 
-#include "node.h"
+#include <node.h>
 
 const string ROOT_LABEL = "TRIE_ROOT_IGNORE";
 
@@ -15,6 +16,7 @@ class Trie
 {
     private:
         Node *mRootNode;
+    // end private
 
     public:
         Trie();
@@ -28,25 +30,48 @@ class Trie
         void read(ifstream &dataset);
         void write(ostream &target, const int &klimit);
         void wdfs(ostream &target, const int &klimit, Node *node, int depth, string path);
-};
+    // end public
+}; // end class
 
 Trie::Trie()
 {
-    mRootNode = new Node(ROOT_LABEL);
-    if (mRootNode == NULL)
-    {
-        fprintf(stderr, "Trie::Trie: MEMORY ALLOCATION FAILURE\n");
-        exit(1);
-    }
-}
+    mRootNode = new Node();
+    mRootNode->setLabel(ROOT_LABEL);
+} // end constructor
 
 Trie::~Trie()
 {
     removeSubtree(mRootNode);
-}
+} // end destructor
 
 void Trie::insert(stringstream &itemset)
 {
+    Node *node;
+    string item;
+    int subtrees;
+
+    /* begin traversal */
+    node = mRootNode;
+
+    /* for each item in the itemset */
+    while (itemset)
+    {
+        node++;
+        itemset >> item;
+
+        /* create child node if it does not exist */
+        if (!node->isExist(item))
+        {
+            node->insert(item);
+        } // end if
+
+        /* go to child node */
+        node->retrieve(item);
+    }
+
+
+
+
     Node *node;
     string item;
 
