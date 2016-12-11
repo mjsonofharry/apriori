@@ -57,8 +57,6 @@ Node::Node(string label)
     mSupport = 1;
 
     flag = false;
-
-    printf("Created new node with label %s and buffer %d\n", mLabel.c_str(), mBuffer);
 }
 
 Node::~Node()
@@ -72,7 +70,12 @@ Node::~Node()
 
 void Node::add(string label)
 {
-    Node *newNode;
+    Node *tmp, *newNode;
+
+    if ((tmp = get(label)) != NULL)
+    {
+        return;
+    }
 
     newNode = new Node(label);
     if (newNode == NULL)
@@ -83,12 +86,13 @@ void Node::add(string label)
 
     if (mBuffer <= mCount + 1)
     {
-        printf("Node::add: Warning: resizing buffer (%d) to store %d nodes\n", mBuffer, mCount + 1);
         resize();
     }
 
     mChild[mCount] = newNode;
     mCount++;
+
+    printf("(new count: %d)\t", mCount);
 
     newNode = NULL;
 }
@@ -133,8 +137,16 @@ int Node::getSupport()
 
 void Node::resize()
 {
+    if (mChild == NULL)
+    {
+        mBuffer = INITIAL_BUFFER_SIZE;
+    }
+    else
+    {
+        mBuffer *= 2;
+    }
 
-    mBuffer *= 2;
+    printf("(new buffer size: %d)", mBuffer);
 
     Node **array = new Node*[mBuffer];
     if (array == NULL)

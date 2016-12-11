@@ -35,7 +35,7 @@ Trie::Trie()
     mRootNode = new Node(ROOT_LABEL);
     if (mRootNode == NULL)
     {
-        fprintf(stderr, "Trie::Trie: MEMORY ALLOCATION FAILURE");
+        fprintf(stderr, "Trie::Trie: MEMORY ALLOCATION FAILURE\n");
         exit(1);
     }
 }
@@ -50,8 +50,6 @@ void Trie::insert(stringstream &itemset)
     Node *node;
     string item;
 
-    printf("Inserting: ");
-
     node = mRootNode;
 
     while (itemset)
@@ -60,23 +58,20 @@ void Trie::insert(stringstream &itemset)
 
         itemset >> item;
 
-        printf("Adding: %s\n", item.c_str());
+        printf("Inserting: %s\t", item.c_str());
 
-        /* Item not in node's list */
         if (node->get(item) == NULL)
         {
             node->add(item);
         }
 
-        if ((node = node->get(item)) == NULL)
+        printf("\n");
+
+        node = node->get(item);
+        if (node == NULL)
         {
-            printf("Item not found in list. Adding to list\n");
-            node = new Node(item);
-            if (node == NULL)
-            {
-                fprintf(stderr, "Trie::insert: ERROR: MEMORY ALLOCATION FAILURE");
-                exit(1);
-            }
+            fprintf(stderr, "Trie::insert: NODE QUERY FAILURE");
+            exit(1);
         }
     }
 }
@@ -129,7 +124,7 @@ void Trie::read(ifstream &dataset)
         {
             break;
         }
-        printf("Read: %s\n", str.c_str());
+        printf("Reading itemset: %s\n", str.c_str());
 
         itemset.str(str);
         insert(itemset);
