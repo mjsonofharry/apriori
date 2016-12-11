@@ -65,7 +65,7 @@ class LinkedList
       void display();
       bool insert(T data);
       bool isEmpty();
-      int  isExist(T searchKey);
+      bool isExist(T searchKey);
       bool remove(T searchKey);
       T    removeAt(int index);
 
@@ -287,35 +287,28 @@ bool LinkedList<T>::isEmpty()
 
 
 /*      Pre:  The list is instantiated and the searchKey is available
- *     Post:  The function returns an index or -1 if the value does not exist
+ *     Post:  The function returns true if the search key exists in the list;
+ *            otherwise false
  *  Purpose:  To determine if a specific value exists in the list or not
  *****************************************************************************/
 template <typename T>
-int LinkedList<T>::isExist(T searchKey)
+bool LinkedList<T>::isExist(T searchKey)
 {
-   int     index;
+   bool    found = false;
    Node<T> *tmp;
 
    tmp = mHead;
-   for (index = 0; tmp != NULL; i++)
+   while (tmp != NULL && !found)
    {
-       if (tmp->mData == searchKey)
-       {
-           index = i;
-           break;
-       }
-       else if (tmp->mData > searchKey)
-       {
-           index = -1;
-           break;
-       }
-       else
-       {
-           tmp = tmp->mNext;
-       }
+      if (tmp->mData == searchKey)
+         found = true;
+      else if (tmp->mData > searchKey)
+         tmp = NULL;
+      else
+         tmp = tmp->mNext;
    }
 
-   return index;
+   return found;
 }
 
 

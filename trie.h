@@ -23,75 +23,75 @@ class Trie
             {
                 mItem  = "";
                 mChild = NULL;
-            }
+            } // end constructor
 
             Label(string item, Node *child)
             {
                 mItem  = item;
                 mChild = child;
-            }
+            } // end constructor
 
             ~Label()
             {
                 mChild = NULL;
-            }
+            } // end destructor
 
             void operator=(Label &rhs)
             {
                 mItem  = rhs.item;
                 mChild = rhs.child;
-            }
+            } // end operator
 
             bool operator==(Label &rhs)
             {
                 return mItem == rhs.mItem;
-            }
+            } // end operator
 
             bool operator==(const string &rhs)
             {
                 return mItem == rhs;
-            }
+            } // end operator
 
             bool operator<(Label &rhs)
             {
                 return mItem < rhs.mItem;
-            }
+            } // end operator
 
             bool operator<(const string &rhs)
             {
                 return mItem < rhs;
-            }
+            } // end operator
 
             bool operator<=(Label &rhs)
             {
                 return mItem <= rhs.mItem;
-            }
+            } // end operator
 
             bool operator<=(const string &rhs)
             {
                 return mItem <= rhs;
-            }
+            } // end operator
 
             bool operator>(Label &rhs)
             {
                 return mItem > rhs.mItem;
-            }
+            } // end operator
 
             bool operator>(const string &rhs)
             {
                 return mItem > rhs;
-            }
+            } // end operator
 
             bool operator>=(Label &rhs)
             {
                 return mItem >= rhs.mItem;
-            }
+            } // end operator
 
             bool operator>=(const string &rhs)
             {
                 return mItem >= rhs;
-            }
-        }
+            } // end operator
+        }; // end struct
 
         struct Node
         {
@@ -101,15 +101,16 @@ class Trie
             Node()
             {
                 flag = false;
-            }
+            } // end constructor
 
             ~Node()
             {
                 mList.clear();
-            }
-        }
+            } // end destructor
+        }; // end struct
 
         Node *mRootNode;
+    // end private
 
     public:
         Trie();
@@ -123,22 +124,24 @@ class Trie
         void read(ifstream &dataset);
         void write(ostream &target, const int &klimit);
         void wdfs(ostream &target, const int &klimit, Node *node, int depth, string path);
-};
+    // end public
+}; // end class
 
 Trie::Trie()
 {
     mRootNode = new Node();
-}
+} // end constructor
 
 Trie::~Trie()
 {
     removeSubtree(mRootNode);
-}
+} // end denstructor
 
 void Trie::insert(stringstream &itemset)
 {
-    Node *node;
+    Node *node, *newNode, *tmp;
     string item;
+    int index;
 
     printf("Inserting: ");
 
@@ -147,15 +150,34 @@ void Trie::insert(stringstream &itemset)
     while (itemset)
     {
         itemset >> item;
-
         printf("%s ", item.c_str());
 
-        if (node->mList.isExist(item))
+        /* check for the label and create it if necessary */
+        if (!node->mList.isExist(item))
         {
+            newNode = new Node();
+            if (newNode == NULL)
+            {
+                exit(1);
+            } // end if
 
-        }
-    }
-}
+            node->mList.insert(Label(item, newNode))
+        } // end if
+
+        /* traverse to the next node */
+        tmp = node->mList[0];
+        for (int i = 0; tmp != NULL; i++)
+        {
+            tmp = node->mList[i];
+
+            if (tmp->mLabel == item)
+            {
+                node = tmp;
+                break;
+            } // end if
+        } // end for
+    } // end while
+} // end function
 
 
 void Trie::prune(const int &support)
