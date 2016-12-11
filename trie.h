@@ -5,7 +5,7 @@
 #include <sstream>
 #include <string>
 
-#include "node.h"
+#include "linkedList.h"
 
 const string ROOT_LABEL = "TRIE_ROOT_IGNORE";
 
@@ -14,6 +14,101 @@ using namespace std;
 class Trie
 {
     private:
+        struct Label
+        {
+            string mItem;
+            Node   *mChild;
+
+            Label()
+            {
+                mItem  = "";
+                mChild = NULL;
+            }
+
+            Label(string item, Node *child)
+            {
+                mItem  = item;
+                mChild = child;
+            }
+
+            ~Label()
+            {
+                mChild = NULL;
+            }
+
+            void operator=(Label &rhs)
+            {
+                mItem  = rhs.item;
+                mChild = rhs.child;
+            }
+
+            bool operator==(Label &rhs)
+            {
+                return mItem == rhs.mItem;
+            }
+
+            bool operator==(const string &rhs)
+            {
+                return mItem == rhs;
+            }
+
+            bool operator<(Label &rhs)
+            {
+                return mItem < rhs.mItem;
+            }
+
+            bool operator<(const string &rhs)
+            {
+                return mItem < rhs;
+            }
+
+            bool operator<=(Label &rhs)
+            {
+                return mItem <= rhs.mItem;
+            }
+
+            bool operator<=(const string &rhs)
+            {
+                return mItem <= rhs;
+            }
+
+            bool operator>(Label &rhs)
+            {
+                return mItem > rhs.mItem;
+            }
+
+            bool operator>(const string &rhs)
+            {
+                return mItem > rhs;
+            }
+
+            bool operator>=(Label &rhs)
+            {
+                return mItem >= rhs.mItem;
+            }
+
+            bool operator>=(const string &rhs)
+            {
+                return mItem >= rhs;
+            }
+        }
+
+        struct Node
+        {
+            LinkedList<Label> mList;
+            bool flag;
+
+            Node()
+            {
+                flag = false;
+            }
+
+            ~Node()
+            {
+                mList.clear();
+            }
+        }
+
         Node *mRootNode;
 
     public:
@@ -32,13 +127,7 @@ class Trie
 
 Trie::Trie()
 {
-    mRootNode = new Node(ROOT_LABEL);
-    if (mRootNode == NULL)
-    {
-        fprintf(stderr, "UNABLE TO CREATE ROOT NODE");
-        perror(NULL);
-        exit(1);
-    }
+    mRootNode = new Node();
 }
 
 Trie::~Trie()
@@ -57,18 +146,14 @@ void Trie::insert(stringstream &itemset)
 
     while (itemset)
     {
-        node++;
-
         itemset >> item;
 
         printf("%s ", item.c_str());
 
-        if (node->get(item) == NULL)
+        if (node->mList.isExist(item))
         {
-            node->add(item);
-        }
 
-        node = node->get(item);
+        }
     }
 }
 
