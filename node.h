@@ -47,8 +47,12 @@ Node::Node()
 
 Node::Node(string label)
 {
-    Node();
-    mLabel = label;
+    mBuffer  = STARTING_BUFFER;
+    mChild   = new Node*[STARTING_BUFFER];
+    mCount   = 0;
+
+    mLabel   = label;
+    mSupport = 0;
 } // end constructor
 
 
@@ -64,10 +68,8 @@ Node::~Node()
 
 void Node::add(Node *newNode)
 {
-    printf("\t\tAdding node '%s' to array\n", newNode->mLabel.c_str());
-    if (mCount == mBuffer)
+    if (mCount >= mBuffer)
     {
-        printf("\t\t\tUpsizing array\n");
         upsize();
     }
 
@@ -143,7 +145,7 @@ void Node::upsize()
     Node **array;
     int i;
 
-    printf("\t\t\tAllocating space\n");
+    printf("\tBuffer too small (%d) for number of nodes (%d), upsizing\n", mBuffer, mCount);
 
     mBuffer *= 2;
     array = new Node*[mBuffer];
@@ -153,30 +155,21 @@ void Node::upsize()
         exit(1);
     } // end if
 
-    printf("\t\t\tCopying memory...\n");
-
     /* copy old memory over to new array */
     for (i = 0; i < mCount; i++)
     {
         array[i] = mChild[i];
     } // end for
-
-    printf("\t\t\tInitialzing buffer...\n");
-
     for (; i < mBuffer; i++)
     {
         array[i] = NULL;
     } // end for
-
-    printf("\t\t\tFreeing space...\n");
 
     for (i = 0; i < mCount; i++)
     {
         delete mChild[i];
         mChild[i] = NULL;
     }
-
-    printf("\t\t\tPointing...\n");
 
     mChild = array;
     array  = NULL;
@@ -193,5 +186,6 @@ void Node::operator++()
 {
     mSupport++;
 } // end operator overload
+
 
 #endif

@@ -61,7 +61,7 @@ void Trie::insert(stringstream &itemset)
     {
         /* retrieve a single item */
         itemset >> item;
-        cout << "\t\tInserting: " << item << "\n";
+        cout << "\tInserting item: " << item << "\n";
 
         /* item NOT found */
         if ((index = node->getIndex(item)) == -1)
@@ -76,6 +76,7 @@ void Trie::insert(stringstream &itemset)
 
             node->add(newNode);
         } // end if
+        cout << "\n";
 
         index = node->getIndex(item);
         node = (*node)[index];
@@ -121,7 +122,7 @@ void Trie::read(ifstream &dataset)
             break;
         } // end if
         itemset.str(str);
-        cout << "\tInserting: " << str << "\n";
+        cout << "Inserting itemset: " << str << "\n";
 
 
         insert(itemset);
