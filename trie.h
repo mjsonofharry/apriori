@@ -78,7 +78,7 @@ void Trie::insert(stringstream &itemset)
         } // end if
 
         index = node->getIndex(item);
-        node = node->get(index);
+        node = (*node)[index];
         node++;
     } // end while
 } // end function
@@ -97,7 +97,7 @@ void Trie::prune(Node *node)
         count = node->getCount();
         for (i = 0; i < count; i++)
         {
-            tmp = node->get(i);
+            tmp = (*node)[i];
             prune(tmp);
         } // end for
     } // end else
@@ -139,7 +139,7 @@ void Trie::removeSubtree(Node *node)
 
     for (i = 0; i < count; i++)
     {
-        tmp = node->get(i);
+        tmp = (*node)[i];
         removeSubtree(tmp);
     } // end for
     delete node;
@@ -168,7 +168,7 @@ void Trie::write(ostream &target, const int &limit)
             count = node->getCount();
             for (i = 0; i < count; i++)
             {
-                stack.push(node->get(i));
+                stack.push((*node)[i]);
             }
         }
 
