@@ -37,7 +37,6 @@ class Trie
 Trie::Trie()
 {
     mRootNode = new Node();
-    mRootNode->setLabel(ROOT_LABEL);
 } // end constructor
 
 
@@ -51,7 +50,6 @@ void Trie::insert(stringstream &itemset)
 {
     Node *node;
     string item;
-    int subtrees;
 
     /* begin traversal */
     node = mRootNode;
@@ -141,7 +139,7 @@ void Trie::read(ifstream &dataset)
 
 void Trie::write(ostream &target, const int &klimit)
 {
-    printf("%d-itemset\n", klimit);
+    target << klimit << "-itemset\n";
     wdfs(target, klimit, mRootNode, 0, "");
     printf("\n");
 } // end function
@@ -155,7 +153,7 @@ void Trie::wdfs(ostream &target, const int &klimit, Node *node, int depth, strin
     {
         if (depth == klimit)
         {
-            printf("%s (%d)\n", path.c_str(), node->support());
+            target << path << " (" << node->support() << ")\n";
         }
         else if (!(*node)[i]->isMarked())
         {
