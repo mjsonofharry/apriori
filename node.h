@@ -32,11 +32,19 @@ class Node
                 mChild = NULL;
             } // end destructor
 
+            Node* get(int i)
+            {
+                Container tmp;
+
+                tmp = mList.getData(i);
+
+                return tmp->mChild;
+            } // end function
+
             void operator=(Container rhs)
             {
                 mChild   = rhs.mChild;
                 mLabel   = rhs.mLabel;
-                mSupport = rhs.mSupport;
             } // end operator
 
             bool operator==(Container rhs)
@@ -101,7 +109,7 @@ class Node
 
             Node* operator[](int i)
             {
-                return mList[i]->mChild;
+                return (*mList)[i];
             } // end operator
         }; // end struct
 
@@ -132,7 +140,7 @@ Node::Node()
 {
     mSupport = 0;
     mFlag    = false;
-}
+} // end function
 
 
 void Node::insert(string label)
@@ -173,7 +181,7 @@ Node* Node::get(string label)
     {
         if (mList[i] == label)
         {
-            tmp = mList[i];
+            tmp = (*mList)[i];
             break;
         } // end if
     } // end for
@@ -184,7 +192,7 @@ Node* Node::get(string label)
 
 string Node::getLabel(int index)
 {
-    return mList.getData(index).mLabel;
+    return (*mList)[i];
 } // end function
 
 
@@ -208,7 +216,7 @@ int Node::support()
 
 Node* Node::operator[](int i)
 {
-    return mList[i];
+    return (*mList)[i];
 } // end operator
 
 

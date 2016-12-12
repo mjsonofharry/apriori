@@ -5,7 +5,7 @@
      *
      *  Description:
      *      This is the template linked list definition.
-     *  
+     *
      *  Certification of Authenticity:
      *     I certify that this assignment is entirely my own work.
      **********************************************************************/
@@ -88,7 +88,7 @@ LinkedList<T>::LinkedList()
 
 /*      Pre:  None
  *     Post:  All the nodes in the list is deleted
- *  Purpose:  To remove all the nodes in the list 
+ *  Purpose:  To remove all the nodes in the list
  *****************************************************************************/
 template <typename T>
 LinkedList<T>::~LinkedList()
@@ -163,7 +163,7 @@ void LinkedList<T>::setData(int index, T data)
 
 /*      Pre:  The list is initiated
  *     Post:  All the nodes in the list is deleted
- *  Purpose:  To remove all the nodes in the list 
+ *  Purpose:  To remove all the nodes in the list
  *****************************************************************************/
 template <typename T>
 void LinkedList<T>::clear()
@@ -216,7 +216,7 @@ void LinkedList<T>::display()
 
 
 /*      Pre:  The list is instantiated and the data is available
- *     Post:  The data is inserted in ascending order 
+ *     Post:  The data is inserted in ascending order
  *  Purpose:  To insert a data into the list in ascending order.  However, if
  *            the data already existed in the list, it will not be added again
  *****************************************************************************/
@@ -275,7 +275,7 @@ bool LinkedList<T>::insert(T data)
 }
 
 
-/*      Pre:  The list is instantiated 
+/*      Pre:  The list is instantiated
  *     Post:  The function returns true is the list is empty; false otherwise
  *  Purpose:  To determine if the list is empty
  *****************************************************************************/
@@ -296,7 +296,7 @@ bool LinkedList<T>::isExist(T searchKey)
 {
    bool    found = false;
    Node<T> *tmp;
-   
+
    tmp = mHead;
    while (tmp != NULL && !found)
    {
@@ -382,8 +382,8 @@ bool LinkedList<T>::remove(T searchKey)
 
 /*      Pre:  The list is instantiated and the index is valid
  *     Post:  Remove the element in the specified index location and returns
- *            its content to the caller.  If the index location is invalid, the  
- *            function returns the default value 
+ *            its content to the caller.  If the index location is invalid, the
+ *            function returns the default value
  *  Purpose:  To remove an item in the specified index location
  *****************************************************************************/
 template <typename T>

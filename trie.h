@@ -6,7 +6,7 @@
 #include <sstream>
 #include <string>
 
-#include <node.h>
+#include "node.h"
 
 const string ROOT_LABEL = "TRIE_ROOT_IGNORE";
 
