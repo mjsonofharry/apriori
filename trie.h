@@ -119,20 +119,20 @@ void Trie::read(ifstream &dataset)
     stringstream itemset;
     string       str;
 
-    while (dataset)
+    while (!dataset.eof())
     {
         getline(dataset, str);
-        if (str == "")
+
+        if (str != "")
         {
-            break;
+            printf("Reading itemset: %s\n", str.c_str());
+
+            itemset.str(str);
+            insert(itemset);
+
+            itemset.str(string());
+            itemset.clear();
         } // end if
-        printf("Reading itemset: %s\n", str.c_str());
-
-        itemset.str(str);
-        insert(itemset);
-
-        itemset.str(string());
-        itemset.clear();
     } // end while
 } // end function
 

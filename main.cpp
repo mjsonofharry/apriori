@@ -12,12 +12,17 @@ int main()
     printf("Opened %s", "output_test.txt\n");
 
     trie.read(fin);
+    fin.close();
+
     trie.prune(2);
 
     for (int i = 0; i < 9; i++)
     {
+        printf("Writing %d-itemsets\n", i);
         trie.write(fout, i);
     }
+
+    fout.close();
 
     return 0;
 }
