@@ -33,16 +33,19 @@ class Trie
     // end public
 }; // end class
 
+
 Trie::Trie()
 {
     mRootNode = new Node();
     mRootNode->setLabel(ROOT_LABEL);
 } // end constructor
 
+
 Trie::~Trie()
 {
     removeSubtree(mRootNode);
 } // end destructor
+
 
 void Trie::insert(stringstream &itemset)
 {
@@ -56,6 +59,11 @@ void Trie::insert(stringstream &itemset)
     /* for each item in the itemset */
     while (itemset)
     {
+        if (node == NULL)
+        {
+            exit(1); // we seem to have met with a terrible fate
+        }
+
         node++;
         itemset >> item;
 
@@ -66,76 +74,47 @@ void Trie::insert(stringstream &itemset)
         } // end if
 
         /* go to child node */
-        node->retrieve(item);
-    }
-
-
-
-
-    Node *node;
-    string item;
-
-    node = mRootNode;
-
-    while (itemset)
-    {
-        node++;
-
-        itemset >> item;
-
-        printf("Inserting: %s\t", item.c_str());
-
-        if (node->get(item) == NULL)
-        {
-            node->add(item);
-        }
-
-        printf("\n");
-
         node = node->get(item);
-        if (node == NULL)
-        {
-            fprintf(stderr, "Trie::insert: NODE QUERY FAILURE");
-            exit(1);
-        }
-    }
-}
+    } // end while
+} // end function
 
 
 void Trie::prune(const int &support)
 {
     prune(mRootNode, support);
-}
+} // end function
 
 
 void Trie::prune(Node *node, const int &support)
 {
-    if (node->getSupport() < support)
+    if (node->support() < support)
     {
         removeSubtree(node);
     }
     else
     {
-        for (int i = 0; i < node->getCount(); i++)
+        for (int i = 0; i < node->size(); i++)
         {
             prune((*node)[i], support);
-        }
-    }
-}
+        } // end for
+    } // end if
+} // end function
+
 
 void Trie::removeSubtree(Node *node)
 {
     if (node != NULL)
     {
-        for (int i = 0; i < node->getCount(); i++)
+        for (int i = 0; i < node->size(); i++)
         {
             removeSubtree((*node)[i]);
-        }
+        } // end for
 
         delete node;
         node = NULL;
-    }
-}
+    } // end if
+} // end function
+
 
 void Trie::read(ifstream &dataset)
 {
@@ -148,7 +127,7 @@ void Trie::read(ifstream &dataset)
         if (str == "")
         {
             break;
-        }
+        } // end if
         printf("Reading itemset: %s\n", str.c_str());
 
         itemset.str(str);
@@ -156,29 +135,31 @@ void Trie::read(ifstream &dataset)
 
         itemset.str(string());
         itemset.clear();
-    }
-}
+    } // end while
+} // end function
+
 
 void Trie::write(ostream &target, const int &klimit)
 {
     printf("%d-itemset\n", klimit);
     wdfs(target, klimit, mRootNode, 0, "");
     printf("\n");
-}
+} // end function
+
 
 void Trie::wdfs(ostream &target, const int &klimit, Node *node, int depth, string path)
 {
-    node->flag = true;
+    node->mark();
 
-    for (int i = 0; i < node->getCount(); i++)
+    for (int i = 0; i < node->size(); i++)
     {
         if (depth == klimit)
         {
-            printf("%s (%d)\n", path.c_str(), node->getSupport());
+            printf("%s (%d)\n", path.c_str(), node->support());
         }
-        else if (!(*node)[i]->flag)
+        else if (!(*node)[i]->isMarked())
         {
-            wdfs(target, klimit, (*node)[i], depth + 1, path + " " + (*node)[i]->getLabel());
+            wdfs(target, klimit, (*node)[i], depth + 1, path + " " + node->getLabel(i));
         }
     }
 }

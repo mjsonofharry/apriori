@@ -12,112 +12,210 @@ class Node
     private:
         struct Container
         {
-            Node  *mChild;
-            string mItem;
-            int    mSupport;
+            Node   *mChild;
+            string mLabel;
 
-            Container();
-            ~Container();
+            Container()
+            {
+                mChild   = NULL;
+                mLabel   = "";
+            } // end constructor
 
-            void  operator=(Container rhs);
-            bool  operator==(Container rhs);
-            bool  operator==(string rhs);
-            bool  operator<(Container rhs);
-            bool  operator<(string rhs);
-            bool  operator<=(Container rhs);
-            bool  operator<=(string rhs);
-            bool  operator>(Container rhs);
-            bool  operator>(string rhs);
-            bool  operator>=(Container rhs);
-            bool  operator>=(string rhs);
-            Node* operator[](int i);
+            Container(string label)
+            {
+                mChild   = NULL;
+                mLabel   = label;
+            } // end constructor
+
+            ~Container()
+            {
+                mChild = NULL;
+            } // end destructor
+
+            void operator=(Container rhs)
+            {
+                mChild   = rhs.mChild;
+                mLabel   = rhs.mLabel;
+                mSupport = rhs.mSupport;
+            } // end operator
+
+            bool operator==(Container rhs)
+            {
+                return mLabel == rhs.mLabel;
+            } // end operator
+
+            bool operator==(string rhs)
+            {
+                return mLabel == rhs;
+            } // end operator
+
+            bool operator!=(Container rhs)
+            {
+                return mLabel != rhs.mLabel;
+            } // end operator
+
+            bool operator!=(string rhs)
+            {
+                return mLabel != rhs;
+            } // end operator
+
+            bool operator<(Container rhs)
+            {
+                return mLabel < rhs.mLabel;
+            } // end operator
+
+            bool operator<(string rhs)
+            {
+                return mLabel < rhs;
+            } // end operator
+
+            bool operator<=(Container rhs)
+            {
+                return mLabel <= rhs.mLabel;
+            } // end operator
+
+            bool operator<=(string rhs)
+            {
+                return mLabel <= rhs;
+            } // end operator
+
+            bool operator>(Container rhs)
+            {
+                return mLabel > rhs.mLabel;
+            } // end operator
+
+            bool operator>(string rhs)
+            {
+                return mLabel > rhs;
+            } // end operator
+
+            bool operator>=(Container rhs)
+            {
+                return mLabel >= rhs.mLabel;
+            } // end operator
+
+            bool operator>=(string rhs)
+            {
+                return mLabel >= rhs;
+            } // end operator
+
+            Node* operator[](int i)
+            {
+                return mList[i]->mChild;
+            } // end operator
         }; // end struct
 
         LinkedList<Container> mList;
+        int  mSupport;
+        bool mFlag;
     // end private
 
     public:
-        void  insert(Node *newNode);
-        bool  isExist(string item);
-        Node* retrieve(string item);
-        int   subtrees();
+        Node();
 
+        void   insert(string label);
+        bool   isExist(string label);
+        bool   isMarked();
+        Node*  get(string label);
+        string getLabel(int index);
+        void   mark();
+        int    size();
+        int    support();
+
+        Node* operator[](int i);
         void  operator++();
     // end public
 }; // end class
 
-Container::Container()
+
+Node::Node()
 {
-    mChild   = NULL;
-    mItem    = "";
     mSupport = 0;
-} // end constructor
+    mFlag    = false;
+}
 
-Container::~Container()
+
+void Node::insert(string label)
 {
-    mChild = NULL;
-} // end destructor
+    Container newContainer;
+    Node      *newNode;
 
-void Container::operator=(Container rhs)
+    newNode = new Node();
+    if (newNode == NULL)
+    {
+        exit(1);
+    } // end if
+
+    newContainer.mChild = newNode;
+    newContainer.mLabel = label;
+
+    mList.insert(newContainer);
+} // end function
+
+
+bool Node::isExist(string label)
 {
-    mChild   = rhs.mChild;
-    mItem    = rhs.mItem;
-    mSupport = rhs.mSupport;
-} // end operator
+    return mList.isExist(Container(label));
+} // end function
 
-bool Container::operator==(Container rhs)
+
+bool Node::isMarked()
 {
-    return mItem == rhs.mItem;
-} // end operator
+    return mFlag;
+} // end function
 
-bool Container::operator==(string rhs)
+
+Node* Node::get(string label)
 {
-    return mItem == rhs;
-} // end operator
+    Node *tmp = NULL;
 
-bool Container::operator<(Container rhs)
+    for (int i = 0; i < size(); i++)
+    {
+        if (mList[i] == label)
+        {
+            tmp = mList[i];
+            break;
+        } // end if
+    } // end for
+
+    return tmp;
+} // end function
+
+
+string Node::getLabel(int index)
 {
-    return mItem < rhs.mItem;
-} // end operator
+    return mList.getData(index).mLabel;
+} // end function
 
-bool Container::operator<(string rhs)
+
+void Node::mark()
 {
-    return mItem < rhs;
-} // end operator
+    mFlag = true;
+} // end function
 
-bool Container::operator<=(Container rhs)
+
+int Node::size()
 {
-    return mItem <= rhs.mItem;
-} // end operator
+    return mList.getCount();
+} // end function
 
-bool Container::operator<=(string rhs)
+
+int Node::support()
 {
-    return mItem <= rhs;
-} // end operator
+    return mSupport;
+} // end function
 
-bool Container::operator>(Container rhs)
-{
-    return mItem > rhs.mItem;
-} // end operator
 
-bool Container::operator>(string rhs)
-{
-    return mItem > rhs;
-} // end operator
-
-bool Container::operator>=(Container rhs)
-{
-    return mItem >= rhs.mItem;
-} // end operator
-
-bool Container::operator>=(string rhs)
-{
-    return mItem >= rhs;
-} // end operator
-
-Node* Container::operator[](int i)
+Node* Node::operator[](int i)
 {
     return mList[i];
 } // end operator
+
+
+void Node::operator++()
+{
+    mSupport++;
+} // end operator
+
 
 #endif
