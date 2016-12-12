@@ -196,7 +196,10 @@ void Node::insert(string label)
  ******************************************************************************/
 bool Node::isExist(string label)
 {
-    return mList.isExist(Container(label));
+    Container tmp;
+    tmp.mLabel = label;
+
+    return mList.isExist(tmp);
 } // end function
 
 

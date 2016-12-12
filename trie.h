@@ -5,7 +5,7 @@
  *      Due Date: December 10, 2016
  *
  * Description:
- *   Apriori
+ *   Apriori implemenation in C++. Reads a dataset and computes k-itemsets.
  *
  * Certication of Authenticity:
  *   I certify that this is entirely my own work, except where I have given
@@ -28,7 +28,7 @@
 #include <sstream>
 #include <string>
 
-#include "node.h"
+#include "queue.h"
 
 const string ROOT_LABEL = "TRIE_ROOT_IGNORE";
 
@@ -37,6 +37,47 @@ using namespace std;
 class Trie
 {
     private:
+        struct Node
+        {
+            Queue<Node*> mQueue;
+            string       mItem;
+            int          mSupport;
+
+            /* Purpose: Constructor for node
+             *     Pre: None
+             *    Post: Node initialized with default values
+             ******************************************************************/
+            Node()
+            {
+                mItem    = "";
+                mSupport = 0;
+            } // end constructor
+
+            /* Purpose: Constructor for node
+             *     Pre: Item
+             *    Post: Node initialized with default values and item
+             ******************************************************************/
+            Node(string item)
+            {
+                mItem    = item;
+                mSupport = 1;
+            } // end constructor
+
+            /* Purpose: Get the number of nodes in the queue
+             *     Pre: None
+             *    Post: Returns the number of nodes
+             ******************************************************************/
+            int size()
+            {
+                return mQueue.getCount();
+            } // end function
+
+            Node* operator[](int index)
+            {
+                return mQueue[index];
+            } // end operator
+        }; // end struct
+
         Node *mRootNode;
     // end private
 
@@ -46,12 +87,12 @@ class Trie
 
         void insert(stringstream &itemset);
         void prune(const int &support);
-        void prune(Node *node, const int &support);
+        bool prune(Node *node, const int &support);
         void removeSubtree(Node *node);
 
         void read(ifstream &dataset);
         void write(ofstream &target, const int &klimit);
-        void wdfs(ofstream &target, const int &klimit, Node *node, int depth, string path);
+        void rwrite(ofstream &target, const int &klimit, Node *tmp, string path, int depth);
     // end public
 }; // end class
 
@@ -62,12 +103,8 @@ class Trie
  ******************************************************************************/
 Trie::Trie()
 {
-    mRootNode = new Node();
-    if (mRootNode == NULL)
-    {
-        fprintf(stderr, "CRITICAL: Failed to allocate space for new Node!\n");
-        exit(1);
-    }
+    printf("Creating empty tree...\n");
+    mRootNode = NULL;
 } // end constructor
 
 
@@ -77,6 +114,7 @@ Trie::Trie()
  ******************************************************************************/
 Trie::~Trie()
 {
+    printf("Destroying tree...\n");
     removeSubtree(mRootNode);
 } // end destructor
 
@@ -87,33 +125,88 @@ Trie::~Trie()
  ******************************************************************************/
 void Trie::insert(stringstream &itemset)
 {
-    Node *node;
+    Node *tmp, *child, *newNode;
     string item;
+    bool match;
+
+    printf("Inserting itemset\n");
+
+    /* create root node if necessary */
+    if (mRootNode == NULL)
+    {
+        printf("WARNING: No root node found, attempting to create new\n");
+        tmp = new Node();
+        if (tmp == NULL)
+        {
+            fprintf(stderr, "CRITICAL: Failed to allocate heap for new node\n");
+            exit(1);
+        } // end if
+        mRootNode = tmp;
+        tmp = NULL;
+    } // end if
 
     /* begin traversal */
-    node = mRootNode;
+    tmp = mRootNode;
 
-    /* for each item in the itemset */
+    /* for each item in itemset */
     while (itemset)
     {
-        if (node == NULL)
-        {
-            fprintf(stderr, "CRITICAL: Inserting into NULL Node!\n");
-            exit(1);
-        }
-
-        node++;
         itemset >> item;
+        printf("Read item: %s\n", item.c_str());
 
-        /* create child node if it does not exist */
-        if (!node->isExist(item))
+        /* queue is empty */
+        if (tmp->mQueue.isEmpty())
         {
-            node->insert(item);
-        } // end if
+            /* attempt to create new node */
+            newNode = new Node(item);
+            if (newNode == NULL)
+            {
+                fprintf(stderr, "CRITICAL: Failed to allocate heap for new node\n");
+                exit(1);
+            } // end if
 
-        /* go to child node */
-        node = node->get(item);
+            /* enqueue new node */
+            tmp->mQueue.enqueue(newNode);
+            tmp     = newNode;
+            newNode = NULL;
+        }
+        else
+        {
+            /* search queue for a match */
+            match = false;
+            for (int i = 0; i < tmp->size(); i++)
+            {
+                if ((child = (*tmp)[i])->mItem == item)
+                {
+                    /* match found */
+                    match = true;
+                    tmp   = child;
+                    tmp->mSupport++;
+
+                    child = NULL;
+                } // end if
+            } // end for
+
+            /* no match found */
+            if (!match)
+            {
+                /* attempt to create new node */
+                newNode = new Node(item);
+                if (newNode == NULL)
+                {
+                    fprintf(stderr, "CRITICAL: Failed to allocate heap for new node\n");
+                    exit(1);
+                } // end if
+
+                /* enqueue new node */
+                tmp->mQueue.enqueue(newNode);
+                tmp     = newNode;
+                newNode = NULL;
+            }
+        } // end if
     } // end while
+
+    printf("Finished inserting itemset\n");
 } // end function
 
 
@@ -131,19 +224,27 @@ void Trie::prune(const int &support)
  *     Pre: Subtree parent, minimum support value
  *    Post: Only frequent itemsets remain in trie
  ******************************************************************************/
-void Trie::prune(Node *node, const int &support)
+bool Trie::prune(Node *tmp, const int &support)
 {
-    if (node->support() < support)
+    bool removed = false;
+
+    if (tmp->mSupport < support)
     {
-        removeSubtree(node);
+        removeSubtree(tmp);
+        removed = true;
     }
     else
     {
-        for (int i = 0; i < node->size(); i++)
+        for (int i = 0; i < tmp->size(); i++)
         {
-            prune((*node)[i], support);
+            if (prune((*tmp)[i], support))
+            {
+                tmp->mQueue.remove(i);
+            } // end if
         } // end for
     } // end if
+
+    return removed;
 } // end function
 
 
@@ -151,18 +252,22 @@ void Trie::prune(Node *node, const int &support)
  *     Pre: Subtree parent
  *    Post: All nodes in subtree destroyed
  ******************************************************************************/
-void Trie::removeSubtree(Node *node)
+void Trie::removeSubtree(Node *tmp)
 {
-    if (node != NULL)
+    if (tmp == NULL)
     {
-        for (int i = 0; i < node->size(); i++)
-        {
-            removeSubtree((*node)[i]);
-        } // end for
-
-        delete node;
-        node = NULL;
+        return;
     } // end if
+
+    for (int i = 0; i < tmp->size(); i++)
+    {
+        removeSubtree((*tmp)[i]);
+    } // end for
+
+    tmp->mQueue.clear();
+
+    delete tmp;
+    tmp = NULL;
 } // end function
 
 
@@ -181,7 +286,7 @@ void Trie::read(ifstream &dataset)
 
         if (str != "")
         {
-            printf("Reading itemset: %s\n", str.c_str());
+            printf("Retrieving itemset: %s\n", str.c_str());
 
             itemset.str(str);
             insert(itemset);
@@ -190,6 +295,7 @@ void Trie::read(ifstream &dataset)
             itemset.clear();
         } // end if
     } // end while
+    printf("Finished retrieving dataset\n");
 } // end function
 
 
@@ -200,31 +306,29 @@ void Trie::read(ifstream &dataset)
 void Trie::write(ofstream &target, const int &klimit)
 {
     target << klimit << "-itemset\n";
-    wdfs(target, klimit, mRootNode, 0, "");
-    printf("\n");
+    rwrite(target, klimit, mRootNode, "", 0);
 } // end function
 
 
-/* Purpose: Perform DFS traversal to write k-itemsets to output file
- *     Pre: Output file stream, k-limit or max depth to traverse, current node,
- *          current depth, current path
- *    Post: Only frequent itemsets remain in trie
+/* Purpose: Recurse through trie to retrieve k-itemsets
+ *     Pre: Output file stream, k-limit, node, path, depth
+ *    Post: All k-itemsets written to file
  ******************************************************************************/
-void Trie::wdfs(ofstream &target, const int &klimit, Node *node, int depth, string path)
+void Trie::rwrite(ofstream &target, const int &klimit, Node *tmp, string path, int depth)
 {
-    node->mark();
-
-    for (int i = 0; i < node->size(); i++)
+    if (depth == klimit)
     {
-        if (depth == klimit)
-        {
-            target << path << " (" << node->support() << ")\n";
-        }
-        else if (!(*node)[i]->isMarked())
-        {
-            wdfs(target, klimit, (*node)[i], depth + 1, path + " " + node->getLabel(i));
-        }
+        target << path << " (" << tmp->mSupport << ")\n";
     }
-}
+    else
+    {
+        /* recurse through children */
+        for (int i = 0; i < tmp->size(); i++)
+        {
+            path = path + " " + (*tmp)[i]->mItem;
+            rwrite(target, klimit, (*tmp)[i], path, depth + 1);
+        } // end for
+    } // end if
+} // end function
 
 #endif

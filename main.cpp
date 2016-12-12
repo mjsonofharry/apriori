@@ -5,7 +5,7 @@
  *      Due Date: December 10, 2016
  *
  * Description:
- *   Apriori
+ *   Apriori implemenation in C++. Reads a dataset and computes k-itemsets.
  *
  * Certication of Authenticity:
  *   I certify that this is entirely my own work, except where I have given
@@ -22,27 +22,38 @@
 
 #include "header.h"
 
-int main()
+int main(int argc, char *argv[])
 {
     Trie trie;
     ifstream fin;
     ofstream fout;
 
-    fin.open("T5.N0.01K.D0.02K.txt");
-    printf("Opened %s", "T5.N0.01K.D0.02K.txt\n");
-    fout.open("output_test.txt");
-    printf("Opened %s", "output_test.txt\n");
+    if (argc != 3)
+    {
+        printf("Source and target files needed: apriori <source> <target>\nTerminating...\n");
+        return 0;
+    } // end if
+
+    fin.open(argv[1]);
+    printf("Opening %s", argv[1]);
+    fout.open(argv[2]);
+    printf("Opened %s", argv[2]);
+
+    if (!fin || !fout || fin.fail() || fout.fail())
+    {
+        fprintf(stderr, "WARNING: Failed to open file.\nTerminating...\n");
+    } // end if
 
     trie.read(fin);
     fin.close();
 
     trie.prune(2);
 
-    for (int i = 0; i < 9; i++)
+    for (int i = 1; i < 9; i++)
     {
         printf("Writing %d-itemsets\n", i);
         trie.write(fout, i);
-    }
+    } // end for
 
     fout.close();
 

@@ -5,7 +5,7 @@
  *      Due Date: December 10, 2016
  *
  * Description:
- *   Apriori
+ *   Apriori implemenation in C++. Reads a dataset and computes k-itemsets.
  *
  * Certication of Authenticity:
  *   I certify that this is entirely my own work, except where I have given
