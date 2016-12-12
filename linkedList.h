@@ -425,7 +425,7 @@ T LinkedList<T>::removeAt(int index)
  *  Purpose:  To retrieve the specified nodes in the list using [] operator
  *****************************************************************************/
 template <typename T>
- T LinkedList<T>::operator[](int index)
+T LinkedList<T>::operator[](int index)
 {
    return getData(index);
 }

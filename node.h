@@ -34,11 +34,7 @@ class Node
 
             Node* get(int i)
             {
-                Container tmp;
-
-                tmp = mList.getData(i);
-
-                return tmp->mChild;
+                return mList[.getData(i)->mChild];
             } // end function
 
             void operator=(Container rhs)
@@ -105,11 +101,6 @@ class Node
             bool operator>=(string rhs)
             {
                 return mLabel >= rhs;
-            } // end operator
-
-            Node* operator[](int i)
-            {
-                return (*mList)[i];
             } // end operator
         }; // end struct
 
@@ -216,7 +207,7 @@ int Node::support()
 
 Node* Node::operator[](int i)
 {
-    return (*mList)[i];
+    return *mList[i];
 } // end operator
 
 
