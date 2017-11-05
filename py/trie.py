@@ -20,6 +20,7 @@ class Trie:
     def __init__(self):
         self.mRoot = Node("Root")
         self.mRoot.mSupport = sys.maxsize
+        self.mPaths = []
 
     def display(self, node=None, tabs=0):
         if not node:
@@ -80,3 +81,18 @@ class Trie:
         node.mChildren = [child for child in node.mChildren if child.mSupport >= support_threshold]
         for child in node.mChildren:
             self.prune(support_threshold, node=child)
+
+    def compute_all_paths_dfs(self, path, node):
+        path.append(node.mLabel)
+        if not node.mChildren:
+            self.mPaths.append(path)
+        else:
+            for child in node.mChildren:
+                self.compute_all_paths_dfs(path, child)
+
+    def write_results_to_file(self):
+        for node in self.mRoot.mChildren:
+            self.compute_all_paths_dfs([], node=node)
+
+        for path in self.mPaths:
+            print(path)
