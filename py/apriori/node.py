@@ -36,7 +36,7 @@ class HashNode:
         print([child.mLabel for child in self.get_children()])
 
     def get_child(self, label):
-        return mChildren.get(label)
+        return self.mChildren.get(label)
 
     def get_children(self):
         return [child for child in self.mChildren.values()]
