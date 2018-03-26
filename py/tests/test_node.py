@@ -4,7 +4,7 @@ from apriori import Node
 import pytest
 
 @pytest.fixture
-def simple_tree():
+def root__simple_tree():
     root = Node('Root')
     root.add_child('0')
     root.add_child('1')
@@ -12,8 +12,8 @@ def simple_tree():
     return root
 
 @pytest.fixture
-def complex_tree(simple_tree):
-    root = simple_tree
+def root__complex_tree(root__simple_tree):
+    root = root__simple_tree
     for child in root.mChildren:
         label = child.mLabel
         child.add_child(label + '-A')
