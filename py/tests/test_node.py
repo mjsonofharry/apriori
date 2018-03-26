@@ -3,11 +3,38 @@ from apriori import Node
 
 import pytest
 
-def __test__do_not_run():
-    assert 'New mission' is 'refuse this mission'
+@pytest.fixture
+def simple_tree():
+    root = Node('Root')
+    node_0 = root.add_child('0')
+    node_1 = root.add_child('1')
+    node_2 = root.add_child('2')
+    return root
 
-def test__must_always_fail():
-    assert 'This sentence' is False
+@pytest.fixture
+def complex_tree(simple_tree):
+    root = simple_tree
+    for child in root.mChildren:
+        label = child.mLabel
+        child.add_child(label + '-A')
+        child.add_child(label + '-B')
+    return root
+
+def test__fixture__simple_tree(simple_tree):
+    root = simple_tree
+    assert isinstance(root, Node)
+    assert root.mLabel == 'Root'
+    assert len(root.mChildren) == 3
+    for child in root.mChildren:
+        assert len(child.mChildren) == 0
+
+def test__fixture__complex_tree(complex_tree):
+    root = complex_tree
+    assert isinstance(root, Node)
+    assert root.mLabel == 'Root'
+    assert len(root.mChildren) == 3
+    for child in root.mChildren:
+        assert len(child.mChildren) == 2
 
 def test__init():
     node = Node('A')

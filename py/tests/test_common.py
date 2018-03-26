@@ -4,6 +4,12 @@ parent_rpath = os.path.join(os.path.dirname(__file__), '..')
 sys.path.insert(0, os.path.abspath(parent_rpath))
 import apriori
 
+def __test__do_not_run():
+    assert 'New mission' is 'refuse this mission'
+
+def test__must_always_fail():
+    assert 'This sentence' is False
+
 def test__module_exists():
     assert 'apriori' in sys.modules
 
