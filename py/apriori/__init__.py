@@ -1,2 +1,2 @@
 from .trie import Trie
-from .node import Node
+from .node import Node, HashNode
