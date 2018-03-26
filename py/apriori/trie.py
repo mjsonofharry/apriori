@@ -9,8 +9,8 @@ def main():
     trie.write_results_to_file()
 
 class Trie:
-    def __init__(self):
-        self.mRoot = Node("Root")
+    def __init__(self, AbstractNode=Node):
+        self.mRoot = AbstractNode("Root")
         self.mRoot.mSupport = sys.maxsize
         self.mPaths = []
 
@@ -25,7 +25,7 @@ class Trie:
 
             print(tab, str(node.mLabel), '(' + str(node.mSupport) + ')')
 
-        for child in node.mChildren:
+        for child in node.get_children():
             self.display(node=child, tabs=tabs+1)
 
     def get_node_count(self, node=None):
@@ -33,13 +33,13 @@ class Trie:
         if not node:
             node = self.mRoot
 
-        for child in node.mChildren:
+        for child in node.get_children():
             count += self.get_node_count(child)
         return count
 
     def insert_item_as_node(self, node, item_label):
         print("\t\tInserting item:", item_label)
-        for child in node.mChildren:
+        for child in node.get_children():
             if child.mLabel is item_label:
                 child.mSupport += 1
                 return
@@ -70,20 +70,20 @@ class Trie:
         if not node:
             node = self.mRoot
 
-        node.mChildren = [child for child in node.mChildren if child.mSupport >= support_threshold]
-        for child in node.mChildren:
+        node.get_children() = [child for child in node.get_children() if child.mSupport >= support_threshold]
+        for child in node.get_children():
             self.prune(support_threshold, node=child)
 
     def compute_all_paths_dfs(self, path, node):
         path.append(node.mLabel)
-        if not node.mChildren:
+        if not node.get_children():
             self.mPaths.append(path)
         else:
-            for child in node.mChildren:
+            for child in node.get_children():
                 self.compute_all_paths_dfs(path, child)
 
     def write_results_to_file(self):
-        for node in self.mRoot.mChildren:
+        for node in self.mRoot.get_children():
             self.compute_all_paths_dfs([], node=node)
 
         for path in self.mPaths:
