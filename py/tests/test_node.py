@@ -20,16 +20,16 @@ def root__complex_tree(root__simple_tree):
         child.add_child(label + '-B')
     return root
 
-def test__fixture__simple_tree(simple_tree):
-    root = simple_tree
+def test__fixture__simple_tree(root__simple_tree):
+    root = root__simple_tree
     assert isinstance(root, Node)
     assert root.mLabel == 'Root'
     assert len(root.mChildren) == 3
     for child in root.mChildren:
         assert len(child.mChildren) == 0
 
-def test__fixture__complex_tree(complex_tree):
-    root = complex_tree
+def test__fixture__complex_tree(root__complex_tree):
+    root = root__complex_tree
     assert isinstance(root, Node)
     assert root.mLabel == 'Root'
     assert len(root.mChildren) == 3
