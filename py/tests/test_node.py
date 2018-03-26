@@ -6,9 +6,9 @@ import pytest
 @pytest.fixture
 def simple_tree():
     root = Node('Root')
-    node_0 = root.add_child('0')
-    node_1 = root.add_child('1')
-    node_2 = root.add_child('2')
+    root.add_child('0')
+    root.add_child('1')
+    root.add_child('2')
     return root
 
 @pytest.fixture
