@@ -158,3 +158,17 @@ def test__get_children_multiple(AbstractNode):
 def test__get_children_none(AbstractNode):
     node = AbstractNode('Pascal')
     assert node.get_children() == []
+
+def test__set_children(AbstractNode, simple_tree):
+    node = simple_tree
+    child_1 = AbstractNode('Uno')
+    child_2 = AbstractNode('Dos')
+    child_3 = AbstractNode('Tres')
+    children = [child_1, child_2, child_3]
+    node.set_children(children)
+    assert node.get_children() == children
+
+def test__set_children_empty(AbstractNode, simple_tree):
+    node = simple_tree
+    node.set_children([])
+    assert node.get_children() == []
