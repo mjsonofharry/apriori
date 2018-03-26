@@ -1,20 +1,12 @@
+from .node import Node
+
 import sys
 
-class Node:
-    def __init__(self, label):
-        self.mChildren = []
-        self.mLabel = label
-        self.mSupport = 1
-
-    def add_child(self, label):
-        self.mChildren.append(Node(label))
-
-    def display_children(self):
-        print([child.mLabel for child in self.mChildren])
-
-    def get_child(self, label):
-        node = [child for child in self.mChildren if child.mLabel is label][0]
-        return node
+def main():
+    trie = Trie()
+    trie.read_dataset_from_file("../samples/T5.N0.01K.D0.02K.txt")
+    trie.prune(2)
+    trie.write_results_to_file()
 
 class Trie:
     def __init__(self):
@@ -96,3 +88,6 @@ class Trie:
 
         for path in self.mPaths:
             print(path)
+
+if __name__ == '__main__':
+    main()
