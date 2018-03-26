@@ -21,6 +21,9 @@ class Node:
     def get_children(self):
         return [child for child in self.mChildren]
 
+    def set_children(self, children):
+        self.mChildren = children
+
 class HashNode:
     def __init__(self, label):
         self.mChildren = {}
@@ -40,3 +43,6 @@ class HashNode:
 
     def get_children(self):
         return [child for child in self.mChildren.values()]
+
+    def set_children(self, children):
+        self.mChildren = {child.mLabel:child for child in children}

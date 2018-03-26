@@ -70,7 +70,10 @@ class Trie:
         if not node:
             node = self.mRoot
 
-        node.get_children() = [child for child in node.get_children() if child.mSupport >= support_threshold]
+        pruned_children = [
+            child for child in node.get_children() if child.mSupport >= support_threshold
+            ]
+        node.set_children(pruned_children)
         for child in node.get_children():
             self.prune(support_threshold, node=child)
 
