@@ -69,8 +69,11 @@ class HashNode(AbstractNode):
     def set_children(self, children):
         self.mChildren = {child.mLabel:child for child in children}
 
-    def assign(self, key, value):
+    def assign_value(self, key, value):
         self.mChildren[key] = value
+
+    def get_keys(self):
+        return self.mChildren.keys()
 
 
 class BinaryNode(AbstractNode):
