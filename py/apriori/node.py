@@ -45,6 +45,9 @@ class ListNode(AbstractNode):
     def set_children(self, children):
         self.mChildren = children
 
+    def sort(self, key=None, reverse=False):
+        self.mChildren.sort(key=key, reverse=reverse)
+
 
 class HashNode(AbstractNode):
     def __init__(self, label):
@@ -66,6 +69,9 @@ class HashNode(AbstractNode):
     def set_children(self, children):
         self.mChildren = {child.mLabel:child for child in children}
 
+    def assign(self, key, value):
+        self.mChildren[key] = value
+
 
 class BinaryNode(AbstractNode):
     def __init__(self, label):
@@ -80,14 +86,14 @@ class BinaryNode(AbstractNode):
             self.mFirstChild = new_node
         else:
             child = self.mFirstChild
-            while child.mNextSibling != None:
+            while child.mNextSibling is not None:
                 child = child.mNextSibling
             child.mNextSibling = new_node
         return new_node
         
     def get_child(self, label):
         child = self.mFirstChild
-        while child != None:
+        while child is not None:
             if child.mLabel == label:
                 return child
             child = child.mNextSibling
@@ -96,7 +102,7 @@ class BinaryNode(AbstractNode):
     def get_children(self):
         children = []
         child = self.mFirstChild
-        while child != None:
+        while child is not None:
             children.append(child)
             child = child.mNextSibling
         return children
@@ -110,6 +116,17 @@ class BinaryNode(AbstractNode):
         for new_child in children[1:]:
             child.mNextSibling = new_child
             child = child.mNextSibling
+
+    def get_successors(self):
+        return self.mFirstChild, self.mNextSibling
+
+    def get_siblings(self):
+        all_siblings = []
+        sibling = self.mNextSibling
+        while sibling is not None:
+            all_siblings.append(sibling)
+            sibling = sibling.mNextSibling
+        return all_siblings
 
 
 Node = ListNode
