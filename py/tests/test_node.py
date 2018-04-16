@@ -1,9 +1,9 @@
 from test_common import apriori
-from apriori import Node, HashNode
+from apriori import Node, HashNode, BinaryNode
 
 import pytest
 
-@pytest.fixture(params=[Node, HashNode])
+@pytest.fixture(params=[Node, HashNode, BinaryNode])
 def AbstractNode(request):
     '''Provides test with each node implementation'''
     return request.param
