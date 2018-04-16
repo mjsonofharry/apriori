@@ -3,7 +3,7 @@ from apriori import ListNode, HashNode, BinaryNode
 
 import pytest
 
-@pytest.fixture(params=[Node, HashNode, BinaryNode])
+@pytest.fixture(params=[ListNode, HashNode, BinaryNode])
 def AbstractNode(request):
     '''Provides test with each node implementation'''
     return request.param
