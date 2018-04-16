@@ -22,7 +22,7 @@ class AbstractNode(metaclass=abc.ABCMeta):
         pass
 
 
-class Node(AbstractNode):
+class ListNode(AbstractNode):
     def __init__(self, label):
         self.mChildren = []
         self.mLabel = label
@@ -110,3 +110,6 @@ class BinaryNode(AbstractNode):
         for new_child in children[1:]:
             child.mNextSibling = new_child
             child = child.mNextSibling
+
+
+Node = ListNode

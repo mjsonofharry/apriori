@@ -1,5 +1,5 @@
 from test_common import apriori
-from apriori import Node, HashNode, BinaryNode
+from apriori import ListNode, HashNode, BinaryNode
 
 import pytest
 
