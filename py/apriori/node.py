@@ -21,6 +21,21 @@ class AbstractNode(metaclass=abc.ABCMeta):
     def set_children(self):
         pass
 
+    def sort(self):
+        pass
+
+    def assign_value(self):
+        pass
+
+    def get_keys(self):
+        pass
+    
+    def get_successors(self):
+        pass
+
+    def get_siblings(self):
+        pass
+
 
 class ListNode(AbstractNode):
     def __init__(self, label):
